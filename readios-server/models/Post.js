@@ -10,8 +10,8 @@ const postSchema = new mongoose.Schema({
   userId:   { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   groupId:  { type: mongoose.Schema.Types.ObjectId, ref: 'Group' },
   title:    { type: String, required: true },
-  content:  { type: String },
-  type:     { type: String, enum: ['text', 'image', 'video', 'image+text'], required: true },
+  content:  { type: String, required: true },
+  type:     { type: String, enum: ['text', 'image', 'video', 'image+text', 'video+text'], required: true },
   url:      { type: String }, // Optional URL for image or video
   likes:    [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   comments: [commentSchema],
