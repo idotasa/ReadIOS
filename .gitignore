@@ -1,12 +1,4 @@
-node_modules/
-package.json
-package-lock.json
-
-# === Node.js (backend) ===
 readios-server/.env
 readios-server/node_modules/
-
-# === Client (frontend) ===
 readios-client/node_modules/
 readios-client/.env
-
