@@ -8,7 +8,7 @@ const commentSchema = new mongoose.Schema({
 
 const postSchema = new mongoose.Schema({
   userId:   { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  groupId:  { type: mongoose.Schema.Types.ObjectId, ref: 'Group' }, // אופציונלי
+  groupId:  { type: mongoose.Schema.Types.ObjectId, ref: 'Group' },
   title:    { type: String, required: true },
   content:  { type: String },
   type:     { type: String, enum: ['text', 'image', 'video', 'image+text'], required: true },

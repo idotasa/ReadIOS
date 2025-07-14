@@ -4,7 +4,7 @@ const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   email:    { type: String, required: true, unique: true },
-  location: { type: String },
+  location: { type: String, required: true },
   profileImage: { type: String, required: true}, // File location in images
   groups: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Group' }],
   friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],

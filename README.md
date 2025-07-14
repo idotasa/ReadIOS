@@ -1,1 +1,0 @@
-ReadIOS is a social network for book lovers, where users can share reviews, join themed groups, connect with others, and stay updated with community content - all in a simple and user-friendly interface.
