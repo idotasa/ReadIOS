@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const path = require('path');
+const userRoutes = require('./routes/users');
 
 dotenv.config();
 const app = express();
@@ -19,5 +20,7 @@ app.get('/', (req, res) => {
   res.send('🚀 Server is running!');
 });
 
-const PORT = process.env.PORT || 5000;
+app.use('/api/users', userRoutes);
+
+const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`✅ Server on port ${PORT}`));
