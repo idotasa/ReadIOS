@@ -3,6 +3,12 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 
+const fetchUserById = async (id) => {
+  const user = await User.findById(id).select('-password');
+  return user || null;
+};
+
+
 exports.registerUser = async (req, res) => {
   try {
     const { username, email, password, location, profileImage } = req.body;
@@ -53,12 +59,37 @@ exports.loginUser = async (req, res) => {
   }
 };
 
+
 exports.getUserById = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).select('-password');
+    const user = await fetchUserById(req.params.id);
     if (!user) return res.status(404).json({ message: 'User not found' });
     res.json(user);
   } catch (err) {
     res.status(500).json({ message: 'Error fetching user', error: err.message });
+  }
+};
+
+
+exports.updateUserDetails = async (req, res) => {
+  try {
+    const { email, location, profileImage } = req.body;
+
+    // User can update only email, location and profileImage
+    const allowedUpdates = {};
+    if (email !== undefined) allowedUpdates.email = email;
+    if (location !== undefined) allowedUpdates.location = location;
+    if (profileImage !== undefined) allowedUpdates.profileImage = profileImage;
+
+    await User.findByIdAndUpdate(
+      req.params.id,
+      { $set: allowedUpdates },
+      { new: true, runValidators: true }
+    );
+
+    const updatedUser = await fetchUserById(req.params.id);
+    res.json({ message: 'User updated', user: updatedUser });
+  } catch (err) {
+    res.status(500).json({ message: 'Update failed', error: err.message });
   }
 };
