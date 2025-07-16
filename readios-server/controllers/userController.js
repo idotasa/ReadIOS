@@ -157,3 +157,22 @@ exports.removeFriend = async (req, res) => {
     res.status(500).json({ message: 'Remove friend failed', error: err.message });
   }
 };
+
+
+exports.searchUsersContainsName = async (req, res) => {
+  try {
+    const { search } = req.query;
+
+    if (!search) {
+      return res.status(400).json({ message: 'Search query is required' });
+    }
+
+    const regex = new RegExp(search, 'i');
+
+    const users = await User.find({ username: { $regex: regex } }).select('-password');
+
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ message: 'Search failed', error: err.message });
+  }
+};
