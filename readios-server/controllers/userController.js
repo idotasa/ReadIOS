@@ -5,7 +5,8 @@ const jwt = require('jsonwebtoken');
 
 const fetchUserById = async (id) => {
   const user = await User.findById(id).select('-password');
-  return user || null;
+  if (!user) throw new Error('User not found');
+  return user;
 };
 
 
@@ -63,10 +64,9 @@ exports.loginUser = async (req, res) => {
 exports.getUserById = async (req, res) => {
   try {
     const user = await fetchUserById(req.params.id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
     res.json(user);
   } catch (err) {
-    res.status(500).json({ message: 'Error fetching user', error: err.message });
+    res.status(404).json({ message: err.message });
   }
 };
 
@@ -95,16 +95,47 @@ exports.updateUserDetails = async (req, res) => {
 };
 
 
+// Todo: remove from friends, groups, posts etc...
 exports.deleteUser = async (req, res) => {
   try {
-    const user = await User.findByIdAndDelete(req.params.id);
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
+    const user = await fetchUserById(req.params.id)
+    await User.deleteOne(user);
 
     res.json({ message: 'User deleted successfully' });
   } catch (err) {
     res.status(500).json({ message: 'Deletion failed', error: err.message });
+  }
+};
+
+
+exports.addFriend = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { friendId } = req.body;
+
+    if (id === friendId) {
+      return res.status(400).json({ message: "You can't add yourself as a friend" });
+    }
+
+    const user = await User.findById(id);
+    const friend = await User.findById(friendId);
+
+    if (!user || !friend) {
+      return res.status(404).json({ message: 'User or friend not found' });
+    }
+
+    if (user.friends.includes(friendId)) {
+      return res.status(400).json({ message: 'Already friends' });
+    }
+
+    user.friends.push(friendId);
+    friend.friends.push(id);
+
+    await user.save();
+    await friend.save();
+
+    res.json({ message: 'Friend added successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Add friend failed', error: err.message });
   }
 };
