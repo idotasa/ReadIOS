@@ -84,12 +84,27 @@ exports.updateUserDetails = async (req, res) => {
     await User.findByIdAndUpdate(
       req.params.id,
       { $set: allowedUpdates },
-      { new: true, runValidators: true }
+      { runValidators: true }
     );
 
     const updatedUser = await fetchUserById(req.params.id);
     res.json({ message: 'User updated', user: updatedUser });
   } catch (err) {
     res.status(500).json({ message: 'Update failed', error: err.message });
+  }
+};
+
+
+exports.deleteUser = async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json({ message: 'User deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Deletion failed', error: err.message });
   }
 };
