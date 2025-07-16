@@ -110,26 +110,21 @@ exports.deleteUser = async (req, res) => {
 
 exports.addFriend = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { friendId } = req.body;
+    const { id: userId, friendId } = req.params;
 
-    if (id === friendId) {
+    if (userId === friendId) {
       return res.status(400).json({ message: "You can't add yourself as a friend" });
     }
 
-    const user = await User.findById(id);
-    const friend = await User.findById(friendId);
-
-    if (!user || !friend) {
-      return res.status(404).json({ message: 'User or friend not found' });
-    }
+    const user = await fetchUserById(userId);
+    const friend = await fetchUserById(friendId);
 
     if (user.friends.includes(friendId)) {
-      return res.status(400).json({ message: 'Already friends' });
+      return res.status(400).json({ message: 'You already friends' });
     }
 
     user.friends.push(friendId);
-    friend.friends.push(id);
+    friend.friends.push(userId);
 
     await user.save();
     await friend.save();
@@ -137,5 +132,28 @@ exports.addFriend = async (req, res) => {
     res.json({ message: 'Friend added successfully' });
   } catch (err) {
     res.status(500).json({ message: 'Add friend failed', error: err.message });
+  }
+};
+
+
+exports.removeFriend = async (req, res) => {
+  try {
+    const { id: userId, friendId } = req.params;
+    const user = await fetchUserById(userId);
+    const friend = await fetchUserById(friendId);
+
+    if (!user.friends.includes(friendId)) {
+      return res.status(400).json({ message: 'Users are not friends' });
+    }
+
+    user.friends = user.friends.filter(f => f.toString() !== friendId);
+    friend.friends = friend.friends.filter(f => f.toString() !== userId);
+
+    await user.save();
+    await friend.save();
+
+    res.json({ message: 'Friend removed successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Remove friend failed', error: err.message });
   }
 };
