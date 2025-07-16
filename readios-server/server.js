@@ -4,6 +4,8 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const path = require('path');
 const userRoutes = require('./routes/users');
+const groupRoutes = require('./routes/groups');
+
 
 dotenv.config();
 const app = express();
@@ -24,3 +26,5 @@ app.use('/api/users', userRoutes);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`✅ Server on port ${PORT}`));
+
+app.use('/api/groups', groupRoutes);
