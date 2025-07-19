@@ -3,6 +3,13 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 
+const fetchUserById = async (id) => {
+  const user = await User.findById(id).select('-password');
+  if (!user) throw new Error('User not found');
+  return user;
+};
+
+
 exports.registerUser = async (req, res) => {
   try {
     const { username, email, password, location, profileImage } = req.body;
@@ -53,12 +60,119 @@ exports.loginUser = async (req, res) => {
   }
 };
 
+
 exports.getUserById = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).select('-password');
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    const user = await fetchUserById(req.params.id);
     res.json(user);
   } catch (err) {
-    res.status(500).json({ message: 'Error fetching user', error: err.message });
+    res.status(404).json({ message: err.message });
+  }
+};
+
+
+exports.updateUserDetails = async (req, res) => {
+  try {
+    const { email, location, profileImage } = req.body;
+
+    // User can update only email, location and profileImage
+    const allowedUpdates = {};
+    if (email !== undefined) allowedUpdates.email = email;
+    if (location !== undefined) allowedUpdates.location = location;
+    if (profileImage !== undefined) allowedUpdates.profileImage = profileImage;
+
+    await User.findByIdAndUpdate(
+      req.params.id,
+      { $set: allowedUpdates },
+      { runValidators: true }
+    );
+
+    const updatedUser = await fetchUserById(req.params.id);
+    res.json({ message: 'User updated', user: updatedUser });
+  } catch (err) {
+    res.status(500).json({ message: 'Update failed', error: err.message });
+  }
+};
+
+
+// Todo: remove from friends, groups, posts etc...
+exports.deleteUser = async (req, res) => {
+  try {
+    const user = await fetchUserById(req.params.id)
+    await User.deleteOne(user);
+
+    res.json({ message: 'User deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Deletion failed', error: err.message });
+  }
+};
+
+
+exports.addFriend = async (req, res) => {
+  try {
+    const { id: userId, friendId } = req.params;
+
+    if (userId === friendId) {
+      return res.status(400).json({ message: "You can't add yourself as a friend" });
+    }
+
+    const user = await fetchUserById(userId);
+    const friend = await fetchUserById(friendId);
+
+    if (user.friends.includes(friendId)) {
+      return res.status(400).json({ message: 'You already friends' });
+    }
+
+    user.friends.push(friendId);
+    friend.friends.push(userId);
+
+    await user.save();
+    await friend.save();
+
+    res.json({ message: 'Friend added successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Add friend failed', error: err.message });
+  }
+};
+
+
+exports.removeFriend = async (req, res) => {
+  try {
+    const { id: userId, friendId } = req.params;
+    const user = await fetchUserById(userId);
+    const friend = await fetchUserById(friendId);
+
+    if (!user.friends.includes(friendId)) {
+      return res.status(400).json({ message: 'Users are not friends' });
+    }
+
+    user.friends = user.friends.filter(f => f.toString() !== friendId);
+    friend.friends = friend.friends.filter(f => f.toString() !== userId);
+
+    await user.save();
+    await friend.save();
+
+    res.json({ message: 'Friend removed successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Remove friend failed', error: err.message });
+  }
+};
+
+
+exports.searchUsersContainsName = async (req, res) => {
+  try {
+    const { search } = req.query;
+
+    if (!search) {
+      return res.status(400).json({ message: 'Search query is required' });
+    }
+
+    const regex = new RegExp(search, 'i');
+
+    const users = await User.find({ username: { $regex: regex } }).select('-password');
+
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ message: 'Search failed', error: err.message });
   }
 };
