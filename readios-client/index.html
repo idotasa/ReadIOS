@@ -11,7 +11,13 @@
 
     <header class="top-bar">
         <div class="container-fluid d-flex align-items-center justify-content-between px-4">
-            <div class="logo fw-bold fs-2 me-auto">ReadIOS</div>
+            <div class="d-flex align-items-center me-auto" style="gap: 0.75rem;">
+                <div class="logo-info">
+                    <img id="logo-img" src="./images/ReadIOS.jpg" alt="תמונת לוגו " class="logo-img" />
+                </div>
+                <div class="logo fw-bold fs-2 me-auto">ReadIOS</div>
+            </div>
+            
 
             <div class="search-container mx-auto" style="max-width: 500px; width: 100%;">
                 <input type="text" class="search-bar form-control text-center" placeholder="חיפוש בפיד" />
@@ -39,6 +45,27 @@
     <div class="row">
       <!-- סרגל צד ימין -->
       <aside class="col-md-3 sidebar-right">
+        <div class="friends">
+            <h6 class="fw-bold mb-3">החברים שלי</h6>
+
+    <!-- קבוצה -->
+            <div class="friend-item d-flex align-items-center p-2 mb-2 rounded shadow-sm">
+            <img src="./images/ido_photo.jpg" class="avatar me-3" alt="אוהבי הארי פוטר" />
+            <div class="friend-info">
+                <div class="fw-bold">עידו טסה</div>
+            </div>
+            </div>
+
+            <div class="friend-item d-flex align-items-center p-2 mb-2 rounded shadow-sm">
+            <img src="./images/other_group.jpg" class="avatar me-3" alt="מדע בדיוני" />
+            <div class="friend-info">
+                <div class="fw-bold">שירי יונה</div>
+            </div>
+            </div>
+
+    <!-- הוסף חברים נוספות פה -->
+    
+        </div>
       </aside>
 
       <!-- אזור הפיד -->

@@ -4,7 +4,7 @@
 body {
   margin: 0;
   font-family: "Helvetica Neue", sans-serif;
-  background-color: #ffffff;
+  background-color: #f5f6f7;
   color: #000;
 }
 
@@ -52,6 +52,11 @@ body {
   color: #555;
 }
 
+.logo-info {
+  font-size: 0.9rem;
+  color: #555;
+}
+
 #current-user {
   font-weight: bold;
   color: #000000;
@@ -63,6 +68,14 @@ body {
   border-radius: 50%;
   object-fit: cover;
 }
+
+.logo-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
 
 
 
@@ -94,7 +107,34 @@ body {
 }
 
 /* ============================================================================
-   בקשות חברות
+   קבוצות
+============================================================================ */
+.friends {
+  background: #fff;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.friend-item {
+  background-color: #ffffff;
+  transition: background-color 0.3s;
+}
+
+.friend-item:hover {
+  background-color: #e9ecef;
+}
+
+.friends .avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+
+/* ============================================================================
+   קבוצות
 ============================================================================ */
 .groups {
   background: #fff;
@@ -104,7 +144,7 @@ body {
 }
 
 .group-item {
-  background-color: #f5f6f7;
+  background-color: #ffffff;
   transition: background-color 0.3s;
 }
 
