@@ -35,13 +35,10 @@
         </div>
     </header>
 
-
   <main class="container-fluid mt-3">
     <div class="row">
-
       <!-- סרגל צד ימין -->
       <aside class="col-md-3 sidebar-right">
-
       </aside>
 
       <!-- אזור הפיד -->
@@ -52,40 +49,42 @@
         </div>
 
         <div class="post-creation mb-3 d-flex align-items-center gap-2">
-          <img src="./images/colman_image.jpg" class="avatar me-2" alt="תמונת פרופיל" />
-          <input type="text" class="form-control" placeholder="מה בא לך לשתף, המכללה למנהל?" />
+          <img src="./images/ofir_photo.jpg" class="avatar me-2" alt="תמונת פרופיל" />
+          <input type="text" class="form-control" placeholder="מה בא לך לשתף, אופיר קאיה?" />
           <button class="btn btn-primary ms-2">שתף</button>
         </div>
 
         <!-- פוסטים -->
-        <!-- את הפוסטים השונים (עם תמונה, בלי תמונה, וידאו וכו') כבר ארגנת יפה, כך שלא חזרתי עליהם כאן, רק ודא שהם עקביים באותו מבנה -->
 
       </section>
 
       <!-- סרגל צד שמאל -->
-      <aside class="col-md-3 sidebar-left">
-        <div class="friend-requests">
-          <h6 class="fw-bold mb-3">בקשות חברות</h6>
+    <aside class="col-md-3 sidebar-left">
+        <div class="groups">
+            <h6 class="fw-bold mb-3">הקבוצות שלי</h6>
 
-          <div class="friend-request d-flex align-items-center mb-3">
-            <img src="./images/ido_photo.jpg" class="avatar me-2" alt="עידו טסה" />
-            <div>
-              <strong>עידו טסה</strong><br />
-              <button class="btn btn-sm btn-primary mt-1">אשר</button>
-              <button class="btn btn-sm btn-decline mt-1">דחה</button>
+    <!-- קבוצה -->
+            <div class="group-item d-flex align-items-center p-2 mb-2 rounded shadow-sm">
+            <img src="./images/ido_photo.jpg" class="avatar me-3" alt="אוהבי הארי פוטר" />
+            <div class="group-info">
+                <div class="fw-bold">אוהבי הארי פוטר</div>
+                <div class="text-muted small">31 חברים</div>
             </div>
-          </div>
+            </div>
 
-          <div class="friend-request d-flex align-items-center mb-3">
-            <img src="./images/ofir_photo.jpg" class="avatar me-2" alt="אופיר קאיה" />
-            <div>
-              <strong>אופיר קאיה</strong><br />
-              <button class="btn btn-sm btn-primary mt-1">אשר</button>
-              <button class="btn btn-sm btn-decline mt-1">דחה</button>
+            <div class="group-item d-flex align-items-center p-2 mb-2 rounded shadow-sm">
+            <img src="./images/other_group.jpg" class="avatar me-3" alt="מדע בדיוני" />
+            <div class="group-info">
+                <div class="fw-bold">מדע בדיוני</div>
+                <div class="text-muted small">12 חברים</div>
             </div>
-          </div>
+            </div>
+
+    <!-- הוסף קבוצות נוספות פה -->
+    
         </div>
-      </aside>
+    </aside>
+
 
     </div>
 

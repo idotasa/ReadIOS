@@ -96,38 +96,29 @@ body {
 /* ============================================================================
    בקשות חברות
 ============================================================================ */
-.friend-requests {
+.groups {
   background: #fff;
   padding: 1rem;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
+.group-item {
+  background-color: #f5f6f7;
+  transition: background-color 0.3s;
+}
 
-.friend-request img.avatar {
+.group-item:hover {
+  background-color: #e9ecef;
+}
+
+.groups .avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
 }
 
-.friend-request button {
-  font-size: 0.8rem;
-  padding: 4px 8px;
-}
-
-.btn-decline {
-  background-color: #e4e6eb;
-  color: #050505;
-  border: none;
-  margin-inline-start: 6px;
-  border-radius: 6px;
-  transition: background-color 0.2s;
-}
-
-.btn-decline:hover {
-  background-color: #d8dadf;
-}
 
 
 /* ============================================================================
