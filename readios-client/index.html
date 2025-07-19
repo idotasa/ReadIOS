@@ -2,21 +2,119 @@
 <html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ReadIOS Feed</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>פיד - ReadIOS</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Top Bar -->
-  <header>
-    <div class="user-info">🔑 מחובר בתור: <span id="current-user">username123</span></div>
-    <div class="logo">📚 ReadIOS</div>
-  </header>
 
-  <!-- Feed Section -->
-  <main>
-    <section id="feed"></section>
+    <header class="top-bar">
+        <div class="container-fluid d-flex align-items-center justify-content-between px-4">
+            <div class="logo fw-bold fs-2 me-auto">ReadIOS</div>
+
+            <div class="search-container mx-auto" style="max-width: 500px; width: 100%;">
+                <input type="text" class="search-bar form-control text-center" placeholder="חיפוש בפיד" />
+            </div>
+
+            <div class="filter-dropdown me-2">
+                <select id="filterPosts" class="form-select form-select-sm" aria-label="סינון פוסטים">
+                <option value="all" selected>הצג הכל</option>
+                <option value="image">פוסטים עם תמונות</option>
+                <option value="text">פוסטים עם טקסט בלבד</option>
+                <option value="video">פוסטים עם וידאו</option>
+                </select>
+            </div>
+
+            <div class="d-flex align-items-center ms-auto" style="gap: 0.75rem;">
+                <div class="user-info text-end">
+                    <div id="current-user">אופיר קאיה</div>
+                </div>
+                <img id="profile-img" src="./images/ofir_photo.jpg" alt="תמונת פרופיל" class="avatar" />
+            </div>
+        </div>
+    </header>
+
+
+  <main class="container-fluid mt-3">
+    <div class="row">
+
+      <!-- סרגל צד ימין -->
+      <aside class="col-md-3 sidebar-right">
+
+      </aside>
+
+      <!-- אזור הפיד -->
+      <section class="col-md-6 feed-area">
+
+        <div id="new-post-notification" class="post-alert" aria-live="polite">
+          יש פוסט חדש!
+        </div>
+
+        <div class="post-creation mb-3 d-flex align-items-center gap-2">
+          <img src="./images/colman_image.jpg" class="avatar me-2" alt="תמונת פרופיל" />
+          <input type="text" class="form-control" placeholder="מה בא לך לשתף, המכללה למנהל?" />
+          <button class="btn btn-primary ms-2">שתף</button>
+        </div>
+
+        <!-- פוסטים -->
+        <!-- את הפוסטים השונים (עם תמונה, בלי תמונה, וידאו וכו') כבר ארגנת יפה, כך שלא חזרתי עליהם כאן, רק ודא שהם עקביים באותו מבנה -->
+
+      </section>
+
+      <!-- סרגל צד שמאל -->
+      <aside class="col-md-3 sidebar-left">
+        <div class="friend-requests">
+          <h6 class="fw-bold mb-3">בקשות חברות</h6>
+
+          <div class="friend-request d-flex align-items-center mb-3">
+            <img src="./images/ido_photo.jpg" class="avatar me-2" alt="עידו טסה" />
+            <div>
+              <strong>עידו טסה</strong><br />
+              <button class="btn btn-sm btn-primary mt-1">אשר</button>
+              <button class="btn btn-sm btn-decline mt-1">דחה</button>
+            </div>
+          </div>
+
+          <div class="friend-request d-flex align-items-center mb-3">
+            <img src="./images/ofir_photo.jpg" class="avatar me-2" alt="אופיר קאיה" />
+            <div>
+              <strong>אופיר קאיה</strong><br />
+              <button class="btn btn-sm btn-primary mt-1">אשר</button>
+              <button class="btn btn-sm btn-decline mt-1">דחה</button>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+
+    <p id="empty-feed-message" class="text-center mt-4" style="display:none;">
+      אין פוסטים בפיד.
+    </p>
   </main>
+
+  <!-- כפתור חזרה למעלה -->
+  <button id="scrollToTopBtn" class="btn btn-primary position-fixed bottom-0 start-0 m-4" style="display:none; z-index: 1000;">
+    חזרה למעלה ⬆
+  </button>
+
+  <!-- חלונית שיתוף -->
+  <div id="share-popup" class="modal" style="display:none;">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content text-end">
+        <div class="modal-header">
+          <h5 class="modal-title">שתף פוסט</h5>
+          <button type="button" class="btn-close" aria-label="סגור" id="close-share-popup"></button>
+        </div>
+        <div class="modal-body">
+          <textarea class="form-control mb-3" rows="3" placeholder="רוצה לכתוב משהו על זה? (לא חובה)"></textarea>
+          <button class="btn btn-outline-primary w-100 mb-2">שתף בפיד שלך</button>
+          <button class="btn btn-outline-secondary w-100">העתק קישור</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="main.js"></script>
 </body>
