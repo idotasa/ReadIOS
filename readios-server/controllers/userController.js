@@ -156,13 +156,15 @@ exports.searchUsersContainsName = async (req, res) => {
   try {
     const { search } = req.query;
 
+    let users;
     if (!search) {
-      return res.status(400).json({ message: 'Search query is required' });
+      users = await User.find().select('-password');
     }
 
-    const regex = new RegExp(search, 'i');
-
-    const users = await User.find({ username: { $regex: regex } }).select('-password');
+    else {
+      const regex = new RegExp(search, 'i');
+      users = await User.find({ username: { $regex: regex } }).select('-password');
+    }
 
     res.json(users);
   } catch (err) {
