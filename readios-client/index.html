@@ -5,127 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>פיד - ReadIOS</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="styles/style.css" />
+  <link rel="stylesheet" href="styles/topbar.css" />
+  <link rel="stylesheet" href="styles/feed.css" />
+  <link rel="stylesheet" href="styles/sidebar.css" />
 </head>
 <body>
 
-    <header class="top-bar">
-        <div class="container-fluid d-flex align-items-center justify-content-between px-4">
-            <div class="d-flex align-items-center me-auto" style="gap: 0.75rem;">
-                <div class="logo-info">
-                    <img id="logo-img" src="./images/ReadIOS.jpg" alt="תמונת לוגו " class="logo-img" />
-                </div>
-                <div class="logo fw-bold fs-2 me-auto">ReadIOS</div>
-            </div>
-            
-
-            <div class="search-container mx-auto" style="max-width: 500px; width: 100%;">
-                <input type="text" class="search-bar form-control text-center" placeholder="חיפוש בפיד" />
-            </div>
-
-            <div class="filter-dropdown me-2">
-                <select id="filterPosts" class="form-select form-select-sm" aria-label="סינון פוסטים">
-                <option value="all" selected>הצג הכל</option>
-                <option value="image">פוסטים עם תמונות</option>
-                <option value="text">פוסטים עם טקסט בלבד</option>
-                <option value="video">פוסטים עם וידאו</option>
-                </select>
-            </div>
-
-            <div class="d-flex align-items-center ms-auto" style="gap: 0.75rem;">
-                <div class="user-info text-end">
-                    <div id="current-user">אופיר קאיה</div>
-                </div>
-                <img id="profile-img" src="./images/ofir_photo.jpg" alt="תמונת פרופיל" class="avatar" />
-            </div>
-        </div>
-    </header>
+  <div id="topbar-placeholder"></div>
 
   <main class="container-fluid mt-3">
     <div class="row">
-      <!-- סרגל צד ימין -->
-      <aside class="col-md-3 sidebar-right">
-        <div class="friends">
-            <h6 class="fw-bold mb-3">החברים שלי</h6>
-
-    <!-- קבוצה -->
-            <div class="friend-item d-flex align-items-center p-2 mb-2 rounded shadow-sm">
-            <img src="./images/ido_photo.jpg" class="avatar me-3" alt="אוהבי הארי פוטר" />
-            <div class="friend-info">
-                <div class="fw-bold">עידו טסה</div>
-            </div>
-            </div>
-
-            <div class="friend-item d-flex align-items-center p-2 mb-2 rounded shadow-sm">
-            <img src="./images/other_group.jpg" class="avatar me-3" alt="מדע בדיוני" />
-            <div class="friend-info">
-                <div class="fw-bold">שירי יונה</div>
-            </div>
-            </div>
-
-    <!-- הוסף חברים נוספות פה -->
-    
-        </div>
-      </aside>
-
-      <!-- אזור הפיד -->
-      <section class="col-md-6 feed-area">
-
-        <div id="new-post-notification" class="post-alert" aria-live="polite">
-          יש פוסט חדש!
-        </div>
-
-        <div class="post-creation mb-3 d-flex align-items-center gap-2">
-          <img src="./images/ofir_photo.jpg" class="avatar me-2" alt="תמונת פרופיל" />
-          <input type="text" class="form-control" placeholder="מה בא לך לשתף, אופיר קאיה?" />
-          <button class="btn btn-primary ms-2">שתף</button>
-        </div>
-
-        <!-- פוסטים -->
-
-      </section>
-
-      <!-- סרגל צד שמאל -->
-    <aside class="col-md-3 sidebar-left">
-        <div class="groups">
-            <h6 class="fw-bold mb-3">הקבוצות שלי</h6>
-
-    <!-- קבוצה -->
-            <div class="group-item d-flex align-items-center p-2 mb-2 rounded shadow-sm">
-            <img src="./images/ido_photo.jpg" class="avatar me-3" alt="אוהבי הארי פוטר" />
-            <div class="group-info">
-                <div class="fw-bold">אוהבי הארי פוטר</div>
-                <div class="text-muted small">31 חברים</div>
-            </div>
-            </div>
-
-            <div class="group-item d-flex align-items-center p-2 mb-2 rounded shadow-sm">
-            <img src="./images/other_group.jpg" class="avatar me-3" alt="מדע בדיוני" />
-            <div class="group-info">
-                <div class="fw-bold">מדע בדיוני</div>
-                <div class="text-muted small">12 חברים</div>
-            </div>
-            </div>
-
-    <!-- הוסף קבוצות נוספות פה -->
-    
-        </div>
-    </aside>
-
-
+      <div id="sidebar-right-placeholder" class="col-md-3"></div>
+      <div id="feed-placeholder" class="col-md-6"></div>
+      <div id="sidebar-left-placeholder" class="col-md-3"></div>
     </div>
-
     <p id="empty-feed-message" class="text-center mt-4" style="display:none;">
       אין פוסטים בפיד.
     </p>
   </main>
 
-  <!-- כפתור חזרה למעלה -->
   <button id="scrollToTopBtn" class="btn btn-primary position-fixed bottom-0 start-0 m-4" style="display:none; z-index: 1000;">
     חזרה למעלה ⬆
   </button>
 
-  <!-- חלונית שיתוף -->
   <div id="share-popup" class="modal" style="display:none;">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content text-end">
@@ -142,6 +45,9 @@
     </div>
   </div>
 
-  <script src="main.js"></script>
+  <script src="scripts/feed.js"></script>
+  <script src="scripts/topbar.js"></script>
+  <script src="scripts/sidebar.js"></script>
+  <script src="scripts/main.js"></script>
 </body>
 </html>

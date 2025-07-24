@@ -1,20 +1,10 @@
-// postFeed.js
+// feed.js
 
 const searchInput = document.querySelector('.search-bar');
 const filterSelect = document.getElementById('filterPosts');
-const toggleThemeBtn = document.getElementById('toggle-theme');
-const scrollBtn = document.getElementById('scrollToTopBtn');
-const body = document.body;
 const emptyFeedMessage = document.getElementById('empty-feed-message');
 
-
-// On page load
-window.addEventListener('DOMContentLoaded', () => {
-  toggleThemeBtn.textContent = body.classList.contains('dark-mode') ? 'Light Mode' : 'Dark Mode';
-  document.querySelectorAll('.post-card').forEach(post => attachPostEvents(post));
-});
-
-// Filtering posts
+// סינון פוסטים
 function filterPosts() {
   const searchTerm = searchInput.value.toLowerCase();
   const filter = filterSelect.value;
@@ -41,35 +31,12 @@ function filterPosts() {
 searchInput.addEventListener('input', filterPosts);
 filterSelect.addEventListener('change', filterPosts);
 
-// Scroll button
-window.addEventListener('scroll', () => {
-  scrollBtn.style.display = window.scrollY > 300 ? 'block' : 'none';
-});
-scrollBtn.addEventListener('click', () => {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-});
-
-// Share popup
-const sharePopup = document.getElementById('share-popup');
-document.querySelectorAll('.btn-action[aria-label="share"]').forEach(button => {
-  button.addEventListener('click', () => {
-    sharePopup.style.display = 'block';
-  });
-});
-document.getElementById('close-share-popup').addEventListener('click', () => {
-  sharePopup.style.display = 'none';
-});
-window.addEventListener('click', (e) => {
-  if (e.target === sharePopup) {
-    sharePopup.style.display = 'none';
-  }
-});
-
-// Create post
+// יצירת פוסט חדש
 const shareBtn = document.querySelector('.post-creation button');
 const postInput = document.querySelector('.post-creation input');
+
 document.addEventListener('DOMContentLoaded', () => {
-  shareBtn.addEventListener('click', () => {
+  shareBtn?.addEventListener('click', () => {
     const text = postInput.value.trim();
     if (text === '') return;
 
@@ -83,52 +50,11 @@ document.addEventListener('DOMContentLoaded', () => {
     showNewPostNotification();
     filterPosts();
   });
+
+  document.querySelectorAll('.post-card').forEach(post => attachPostEvents(post));
 });
 
-function createPost(text) {
-  const post = document.createElement('div');
-  post.classList.add('post-card');
-  post.setAttribute('data-type', 'text');
-  post.innerHTML = `
-    <div class="post-top d-flex justify-content-between align-items-start">
-      <div class="d-flex align-items-center">
-        <img src="./images/colman_image.jpg" class="avatar me-2" alt="Avatar" />
-        <div>
-          <strong>המכללה למנהל</strong><br />
-          <small class="text-muted">הרגע</small>
-        </div>
-      </div>
-      <div class="post-options">
-        <span class="dots" aria-label="אפשרויות">⋯</span>
-        <span class="close" aria-label="סגור פוסט">✕</span>
-      </div>
-    </div>
-
-    <div class="post-body">
-      <p>${text}</p>
-    </div>
-
-    <div class="post-reactions" aria-label="תגובות ולייקים">
-      👍 <span class="like-count">0</span> · 💬 <span class="comment-count">0</span> תגובות
-    </div>
-
-    <div class="post-footer">
-      <button class="like-btn" aria-label="like">👍 לייק</button>
-      <button class="comment-btn btn-action" aria-label="commit">💬 תגובה</button>
-      <button class="btn-action" aria-label="share">↗️ שתף</button>
-    </div>
-
-    <div class="comments-section" style="display: none;">
-      <div class="typing-indicator text-muted" style="display: none;">אתה כותב תגובה...</div>
-      <div class="comments-list"></div>
-      <textarea class="comment-input" placeholder="כתוב תגובה..." rows="2"></textarea>
-      <button class="send-comment-btn">שלח</button>
-      <button class="close-comments-btn">בטל</button>
-    </div>
-  `;
-  return post;
-}
-
+// אנימציה לפוסט חדש
 function animatePost(post) {
   post.classList.add('just-added');
   post.style.backgroundColor = '#fff8d3';
@@ -138,6 +64,7 @@ function animatePost(post) {
   }, 2000);
 }
 
+// פונקציות תגובות ולייקים
 function attachPostEvents(post) {
   const likeBtn = post.querySelector('.like-btn');
   const likeCountSpan = post.querySelector('.like-count');
@@ -190,7 +117,8 @@ function attachPostEvents(post) {
   });
 
   const shareBtn = post.querySelector('[aria-label="share"]');
-  shareBtn.addEventListener('click', () => {
+  shareBtn?.addEventListener('click', () => {
+    const sharePopup = document.getElementById('share-popup');
     sharePopup.style.display = 'block';
   });
 

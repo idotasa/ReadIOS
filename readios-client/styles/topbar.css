@@ -1,0 +1,67 @@
+/* topbar.css */
+
+.top-bar {
+  background: #ffffff;
+  color: #000;
+  border-bottom: 1px solid #dddfe2;
+  padding: 0.5rem 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+}
+
+.logo {
+  color: #835101;
+  font-weight: bold;
+  font-size: 1.8rem;
+}
+
+.search-bar {
+  border-radius: 20px;
+  border: 1px solid #dddfe2;
+  padding: 5px 12px;
+  width: 100%;
+  background: #fff;
+  color: #000;
+}
+
+.user-box {
+  display: flex;
+  align-items: center;
+}
+
+.user-info,
+.logo-info {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+#current-user {
+  font-weight: bold;
+  color: #000000;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.logo-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.filter-dropdown {
+  margin-left: auto;
+}
+
+#filterPosts {
+  width: auto;
+  max-width: 180px;
+  font-size: 0.85rem;
+  padding: 0.25rem 0.5rem;
+}

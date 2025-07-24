@@ -1,0 +1,36 @@
+/* sidebar.css */
+
+.sidebar-right,
+.sidebar-left {
+  background-color: #f1f3f5;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.friend-item,
+.group-item {
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.friend-item:hover,
+.group-item:hover {
+  background-color: #f8f9fa;
+}
+
+.friend-item img,
+.group-item img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.friends h6,
+.groups h6 {
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
