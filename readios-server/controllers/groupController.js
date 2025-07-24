@@ -7,10 +7,6 @@ const createGroup = async (req, res) => {
   try {
     const { name, description } = req.body;
 
-    const token = req.header('Authorization');
-    if (!token) return res.status(401).json({ error: 'No token provided' });
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const userId = decoded.id;
 
     const group = new Group({
@@ -101,10 +97,6 @@ const searchGroups = async (req, res) => {
 // Update group (owner only)
 const updateGroup = async (req, res) => {
   try {
-    const token = req.header('Authorization');
-    if (!token) return res.status(401).json({ error: 'No token provided' });
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const userId = decoded.id;
 
     const group = await Group.findById(req.params.id);
@@ -152,10 +144,6 @@ const removeMember = async (req, res) => {
 
 const deleteGroup = async (req, res) => {
   try {
-    const token = req.header('Authorization');
-    if (!token) return res.status(401).json({ error: 'No token provided' });
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const userId = decoded.id;
 
     const group = await Group.findById(req.params.id);
