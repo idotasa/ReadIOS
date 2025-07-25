@@ -1,140 +1,77 @@
-// feed.js
+function initFeed() {
+  const openFormBtn = document.getElementById('openPostFormBtn');
+  const formContainer = document.getElementById('postFormContainer');
+  const cancelBtn = document.getElementById('cancelPostBtn');
+  const postForm = document.getElementById('postForm');
+  const feedArea = document.querySelector('.feed-area');
+  const emptyFeedMessage = document.getElementById('empty-feed-message');
 
-const searchInput = document.querySelector('.search-bar');
-const filterSelect = document.getElementById('filterPosts');
-const emptyFeedMessage = document.getElementById('empty-feed-message');
+  if (!openFormBtn || !formContainer || !cancelBtn || !postForm) {
+    console.warn("topbar elements not found - make sure HTML is loaded first");
+    return;
+  }
 
-// סינון פוסטים
-function filterPosts() {
-  const searchTerm = searchInput.value.toLowerCase();
-  const filter = filterSelect.value;
-  const posts = document.querySelectorAll('.post-card');
-  let visibleCount = 0;
+  openFormBtn.addEventListener('click', () => {
+    formContainer.style.display = 'flex';
+    openFormBtn.style.display = 'none';
+  });
 
-  posts.forEach(post => {
-    const postText = post.querySelector('.post-body p').innerText.toLowerCase();
-    const type = post.getAttribute('data-type');
-    const matchesSearch = postText.includes(searchTerm);
-    const matchesFilter = filter === 'all' || filter === type;
+  cancelBtn.addEventListener('click', () => {
+    formContainer.style.display = 'none';
+    openFormBtn.style.display = 'inline-block';
+    postForm.reset();
+  });
 
-    if (matchesSearch && matchesFilter) {
-      post.style.display = 'block';
-      visibleCount++;
-    } else {
-      post.style.display = 'none';
+  postForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const title = postForm.title.value.trim();
+    const content = postForm.content.value.trim();
+
+    if (!title || !content) {
+      alert('אנא מלא את כל השדות');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/posts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, content, type: 'text' })
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.message || 'שגיאה ביצירת הפוסט');
+      }
+
+      const newPost = await response.json();
+      addPostToFeed(newPost);
+
+      postForm.reset();
+      formContainer.style.display = 'none';
+      openFormBtn.style.display = 'inline-block';
+      if (emptyFeedMessage) emptyFeedMessage.style.display = 'none';
+
+    } catch (error) {
+      alert(error.message);
     }
   });
 
-  emptyFeedMessage.style.display = visibleCount === 0 ? 'block' : 'none';
-}
+  function addPostToFeed(post) {
+    const postDiv = document.createElement('div');
+    postDiv.className = 'post-card';
+    postDiv.setAttribute('data-type', post.type || 'text');
+    postDiv.innerHTML = `
+      <h5>${escapeHtml(post.title)}</h5>
+      <p>${escapeHtml(post.content)}</p>
+      <small>נוצר בתאריך: ${new Date(post.createdAt).toLocaleString()}</small>
+    `;
+    feedArea.insertBefore(postDiv, feedArea.firstChild);
+  }
 
-searchInput.addEventListener('input', filterPosts);
-filterSelect.addEventListener('change', filterPosts);
-
-// יצירת פוסט חדש
-const shareBtn = document.querySelector('.post-creation button');
-const postInput = document.querySelector('.post-creation input');
-
-document.addEventListener('DOMContentLoaded', () => {
-  shareBtn?.addEventListener('click', () => {
-    const text = postInput.value.trim();
-    if (text === '') return;
-
-    const newPost = createPost(text);
-    const feedArea = document.querySelector('.feed-area');
-    feedArea.insertBefore(newPost, feedArea.querySelector('.post-card'));
-
-    animatePost(newPost);
-    attachPostEvents(newPost);
-    postInput.value = '';
-    showNewPostNotification();
-    filterPosts();
-  });
-
-  document.querySelectorAll('.post-card').forEach(post => attachPostEvents(post));
-});
-
-// אנימציה לפוסט חדש
-function animatePost(post) {
-  post.classList.add('just-added');
-  post.style.backgroundColor = '#fff8d3';
-  setTimeout(() => {
-    post.style.backgroundColor = '';
-    post.classList.remove('just-added');
-  }, 2000);
-}
-
-// פונקציות תגובות ולייקים
-function attachPostEvents(post) {
-  const likeBtn = post.querySelector('.like-btn');
-  const likeCountSpan = post.querySelector('.like-count');
-  let likeCount = parseInt(likeCountSpan.textContent) || 0;
-  let liked = false;
-
-  likeBtn.addEventListener('click', () => {
-    liked = !liked;
-    likeCount += liked ? 1 : -1;
-    likeBtn.classList.toggle('liked');
-    likeBtn.classList.add('animate');
-    likeCountSpan.textContent = likeCount;
-    setTimeout(() => likeBtn.classList.remove('animate'), 300);
-  });
-
-  const commentBtn = post.querySelector('.comment-btn');
-  const commentsSection = post.querySelector('.comments-section');
-  const commentsList = post.querySelector('.comments-list');
-  const commentInput = post.querySelector('.comment-input');
-  const sendCommentBtn = post.querySelector('.send-comment-btn');
-  const closeCommentsBtn = post.querySelector('.close-comments-btn');
-  const typingIndicator = post.querySelector('.typing-indicator');
-  const commentCountSpan = post.querySelector('.comment-count');
-
-  commentBtn.addEventListener('click', () => {
-    commentsSection.style.display = commentsSection.style.display === 'block' ? 'none' : 'block';
-    if (commentsSection.style.display === 'block') {
-      commentInput.focus();
-    }
-  });
-
-  closeCommentsBtn.addEventListener('click', () => {
-    commentsSection.style.display = 'none';
-  });
-
-  commentInput.addEventListener('input', () => {
-    typingIndicator.style.display = commentInput.value.trim() ? 'block' : 'none';
-  });
-
-  sendCommentBtn.addEventListener('click', () => {
-    const text = commentInput.value.trim();
-    if (!text) return;
-    const newComment = document.createElement('div');
-    newComment.classList.add('comment-item');
-    newComment.textContent = `אתה: ${text}`;
-    commentsList.appendChild(newComment);
-    commentInput.value = '';
-    typingIndicator.style.display = 'none';
-    commentCountSpan.textContent = commentsList.children.length;
-  });
-
-  const shareBtn = post.querySelector('[aria-label="share"]');
-  shareBtn?.addEventListener('click', () => {
-    const sharePopup = document.getElementById('share-popup');
-    sharePopup.style.display = 'block';
-  });
-
-  const closeBtn = post.querySelector('.close');
-  closeBtn.addEventListener('click', () => {
-    post.remove();
-    filterPosts();
-  });
-
-  commentCountSpan.textContent = commentsList.children.length;
-}
-
-function showNewPostNotification() {
-  const notification = document.getElementById('new-post-notification');
-  notification.style.display = 'block';
-  setTimeout(() => {
-    notification.style.display = 'none';
-  }, 3000);
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
 }
