@@ -1,0 +1,95 @@
+/* feed.css */
+
+.feed-area {
+  background-color: #ffffff;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+#empty-feed-message {
+  font-size: 1.1rem;
+  color: #6c757d;
+}
+
+/* שכבת רקע כהה חצי שקופה */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: none; /* מוסתר כברירת מחדל */
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* הקופסה עצמה */
+.modal-form {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 50vw;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.25);
+  direction: rtl;
+}
+
+/* topbar.css - תוסיף את זה לקובץ ה-CSS של ה-topbar */
+
+/* עיצוב כפתור יצירת פוסט */
+#openPostFormBtn {
+  margin-left: 1rem;
+}
+
+/* עיצוב השדות */
+#postForm input[type="text"],
+#postForm textarea {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  resize: vertical;
+  font-family: inherit;
+  color: #333;
+  transition: border-color 0.2s ease;
+}
+
+#postForm input[type="text"]:focus,
+#postForm textarea:focus {
+  border-color: #1877f2;
+  outline: none;
+  box-shadow: 0 0 5px rgba(24, 119, 242, 0.5);
+}
+
+/* עיצוב הכפתורים */
+#postForm button {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.2s ease;
+}
+
+#postForm button[type="submit"] {
+  background-color: #1877f2;
+  color: white;
+}
+
+#postForm button[type="submit"]:hover {
+  background-color: #166fe5;
+}
+
+#cancelPostBtn {
+  background-color: #6c757d;
+  color: white;
+  margin-left: 0.5rem;
+}
+
+#cancelPostBtn:hover {
+  background-color: #5a6268;
+}
