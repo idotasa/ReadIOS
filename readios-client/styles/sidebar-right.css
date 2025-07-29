@@ -34,8 +34,22 @@
 .delete-btn {
   opacity: 0;
   transition: opacity 0.2s ease;
+  border: none;
 }
 
 .friend-item:hover .delete-btn {
   opacity: 1;
+}
+
+#friendSearchSection .avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+#friendSearchSection .list-group-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
