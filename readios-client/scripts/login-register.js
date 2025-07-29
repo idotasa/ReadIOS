@@ -8,12 +8,13 @@ function closePopup() {
   popup.classList.add('d-none');
 }
 
-// מאזין ללחיצה על הקישור "Register here"
+
+// listens to pressing the link "Register here"
 document.addEventListener("DOMContentLoaded", function () {
   const openRegisterLink = document.getElementById("openRegister");
   if (openRegisterLink) {
     openRegisterLink.addEventListener("click", function (e) {
-      e.preventDefault(); // כדי למנוע גלילה למעלה
+      e.preventDefault(); 
       openPopup();
     });
   }
@@ -29,8 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
-
-// מאפשר להחליף בין הצגת הסיסמה להסתרתה
+// hide and show password
 function togglePassword(inputId) {
   const input = document.getElementById(inputId);
   if (input.type === 'password') {
@@ -40,27 +40,38 @@ function togglePassword(inputId) {
   }
 }
 
-// הצגת הודעת הצלחה
+// show success message 
 function showSuccessMessage() {
   const message = document.getElementById('successMessage');
   message.classList.remove('d-none');
 
   setTimeout(() => {
     message.classList.add('d-none');
-  }, 3000); // מסתיר אחרי 3 שניות
+  }, 3000); 
 }
 
-// מאזין לשליחת טופס ההרשמה
+// listens to sending the register form
 document.addEventListener("DOMContentLoaded", function () {
   const registerForm = document.querySelector(".register-form");
 
   registerForm.addEventListener("submit", function (e) {
-    e.preventDefault(); // מונע שליחה אמיתית של הטופס
+    e.preventDefault(); 
 
-    // בעתיד: שליחה ל-backend
-
-    showSuccessMessage(); // הודעת הצלחה
-    registerForm.reset(); // ניקוי שדות
-    closePopup(); // סגירת הפופאפ
+    showSuccessMessage(); // sucess message 
+    registerForm.reset(); // clean rows
+    closePopup(); // close popup
   });
+});
+
+window.addEventListener("click", function (event) {
+  const popup = document.getElementById("registerPopup");
+  const popupContent = document.querySelector(".popup-content");
+
+  if (
+    popup &&
+    !popup.classList.contains("d-none") &&
+    event.target === popup
+  ) {
+    closePopup();
+  }
 });

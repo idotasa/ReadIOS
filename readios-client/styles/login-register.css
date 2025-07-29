@@ -91,7 +91,6 @@ button:hover {
 /* Popup Modal */
 
 .popup {
-  
   position: fixed;
   z-index: 999;
   left: 0;
