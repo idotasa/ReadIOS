@@ -7,7 +7,7 @@ async function loadComponent(id, path) {
 
 loadComponent('topbar-placeholder', 'components/topbar.html');
 loadComponent('sidebar-left-placeholder', 'components/sidebar-left.html');
-loadComponent('sidebar-right-placeholder', 'components/sidebar-right.html');
+loadComponent('sidebar-right-container', 'components/sidebar-right.html');
 loadComponent('feed-placeholder', 'components/feed.html');
 
 async function loadAllComponents() {
@@ -17,7 +17,7 @@ async function loadAllComponents() {
   await loadComponent('sidebar-left-placeholder', 'components/sidebar-left.html');
   initSidebarLeft(); // אם יש
 
-  await loadComponent('sidebar-right-placeholder', 'components/sidebar-right.html');
+  await loadComponent('sidebar-right-container', 'components/sidebar-right.html');
   initSidebarRight(); // אם יש
 
   await loadComponent('feed-placeholder', 'components/feed.html');

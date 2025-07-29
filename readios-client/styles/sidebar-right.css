@@ -1,0 +1,41 @@
+.sidebar-right {
+  background-color: #f1f3f5;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.friend-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 8px;
+  position: relative;
+  transition: background-color 0.2s ease;
+}
+
+.friend-item:hover {
+  background-color: #f0f0f0;
+}
+
+.friend-item .avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.friend-info {
+  font-size: 0.95rem;
+}
+
+.delete-btn {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.friend-item:hover .delete-btn {
+  opacity: 1;
+}
