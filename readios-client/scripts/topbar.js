@@ -1,4 +1,7 @@
-// topbar.js
+localStorage.setItem("userId", "6877ab02f2212b55a0e18706");
+localStorage.setItem("userName", "851idot");
+
+
 function initTopbar() {
   const openFormBtn = document.getElementById('openPostFormBtn');
   const formContainer = document.getElementById('postFormContainer');

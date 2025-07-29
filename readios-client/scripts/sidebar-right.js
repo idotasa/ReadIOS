@@ -1,6 +1,5 @@
 
 function initSidebarRight() {
-  localStorage.setItem("userId", "6877ab02f2212b55a0e18706");
   const userId = localStorage.getItem("userId");
 
   const addFriendBtn = document.getElementById("addFriendBtn");
