@@ -171,3 +171,20 @@ exports.searchUsersContainsName = async (req, res) => {
     res.status(500).json({ message: 'Search failed', error: err.message });
   }
 };
+
+
+exports.GetUserFriends = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).populate('friends', 'username profileImage');
+
+    const friends = user.friends.map(f => ({
+      id: f._id,
+      username: f.username,
+      profileImage: f.profileImage
+    }));
+
+    res.json({ friends });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch friends', error: err.message });
+  }
+};
