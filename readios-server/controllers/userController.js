@@ -191,21 +191,6 @@ exports.GetUserFriends = async (req, res) => {
 };
 
 
-exports.getUserById = async (req, res) => {
-  try {
-    const user = await User.findById(req.params.id)
-      .populate({
-        path: 'groups',
-        select: '_id name image'
-      });
-
-    res.json({ groups: user.groups });
-  } catch (err) {
-    res.status(500).json({ message: 'Server error' });
-  }
-};
-
-
 exports.getUserGroupPreviews = async (req, res) => {
   try {
     const userId = req.params.id;

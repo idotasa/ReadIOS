@@ -50,6 +50,7 @@ const getGroupById = async (req, res) => {
   }
 };
 
+
 const addGroupMembers = async (req, res) => {
   try {
     const group = await Group.findById(req.params.id);
@@ -57,12 +58,13 @@ const addGroupMembers = async (req, res) => {
 
     const newMembers = req.body.members;
 
-    newMembers.forEach(id => {
+    for (const id of newMembers) {
       const alreadyInGroup = group.members.some(m => m.user.toString() === id);
       if (!alreadyInGroup) {
         group.members.push({ user: id, isAdmin: false });
+        await User.findByIdAndUpdate(id, { $addToSet: { groups: group._id } });
       }
-    });
+    }
 
     await group.save();
     res.json(group);
@@ -71,6 +73,7 @@ const addGroupMembers = async (req, res) => {
     res.status(500).json({ error: 'Failed to add members', details: err.message });
   }
 };
+
 
 
 const searchGroups = async (req, res) => {
@@ -114,7 +117,7 @@ const updateGroup = async (req, res) => {
   }
 };
 
-// Remove member from group (owner only)
+
 const removeMember = async (req, res) => {
   try {
     const group = await Group.findById(req.params.id);
@@ -126,21 +129,23 @@ const removeMember = async (req, res) => {
 
     const memberId = req.params.memberId;
 
-    // סינון על פי m.user
     group.members = group.members.filter(
       m => m.user.toString() !== memberId
     );
 
     await group.save();
+    await User.findByIdAndUpdate(memberId, { $pull: { groups: group._id } });
+
     res.json({ message: 'Member removed', group });
   } catch (err) {
     res.status(500).json({ error: 'Failed to remove member', details: err.message });
   }
 };
 
+
 const deleteGroup = async (req, res) => {
   try {
-    const userId = decoded.id;
+    const userId = req.user.id; 
 
     const group = await Group.findById(req.params.id);
     if (!group) return res.status(404).json({ error: 'Group not found' });
@@ -149,6 +154,13 @@ const deleteGroup = async (req, res) => {
       return res.status(403).json({ error: 'Only the group owner can delete the group' });
     }
 
+    const memberIds = group.members.map(m => m.user.toString());
+
+    await User.updateMany(
+      { _id: { $in: memberIds } },
+      { $pull: { groups: group._id } }
+    );
+
     await group.deleteOne();
     res.json({ message: 'Group deleted successfully' });
   } catch (err) {
@@ -156,6 +168,7 @@ const deleteGroup = async (req, res) => {
     res.status(500).json({ error: 'Failed to delete group', details: err.message });
   }
 };
+
 
 module.exports = {
   createGroup,
