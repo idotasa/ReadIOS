@@ -34,6 +34,7 @@ async function loadAllComponents() {
     } else {
         console.warn("initFeed function not found in feed.js");
     }
+    
 }
 
 document.addEventListener("DOMContentLoaded", () => {

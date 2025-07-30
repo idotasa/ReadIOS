@@ -1,0 +1,48 @@
+.sidebar-left {
+  background-color: #f1f3f5;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.groups h6 {
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
+.group-item {
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s;
+  cursor: pointer;
+}
+
+.group-item:hover {
+  background-color: #f8f9fa;
+}
+
+.group-item img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-left: 0.5rem;
+}
+
+.group-info {
+  font-weight: 500;
+}
+
+#groupSearchSection {
+  margin-bottom: 1rem;
+}
+
+#groupSearchResults .list-group-item {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+#groupSearchResults .list-group-item:hover {
+  background-color: #f1f1f1;
+}

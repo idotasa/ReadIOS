@@ -2,7 +2,6 @@ const Group = require('../models/Group');
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
-// Create a new group
 const createGroup = async (req, res) => {
   try {
     const { name, description } = req.body;
@@ -13,7 +12,7 @@ const createGroup = async (req, res) => {
       name,
       description,
       owner: userId,
-      members: [{ user: userId, isAdmin: true }] // ✅ תיקון כאן
+      members: [{ user: userId, isAdmin: true }]
     });
 
     await group.save();
@@ -24,7 +23,6 @@ const createGroup = async (req, res) => {
   }
 };
 
-// Get group by ID
 const getGroupById = async (req, res) => {
   try {
     const group = await Group.findById(req.params.id).populate('members.user', 'username');
@@ -52,13 +50,12 @@ const getGroupById = async (req, res) => {
   }
 };
 
-// Add members to group
 const addGroupMembers = async (req, res) => {
   try {
     const group = await Group.findById(req.params.id);
     if (!group) return res.status(404).json({ error: 'Group not found' });
 
-    const newMembers = req.body.members; // Array of user IDs
+    const newMembers = req.body.members;
 
     newMembers.forEach(id => {
       const alreadyInGroup = group.members.some(m => m.user.toString() === id);
@@ -76,14 +73,13 @@ const addGroupMembers = async (req, res) => {
 };
 
 
-// Search groups
 const searchGroups = async (req, res) => {
   try {
     const search = typeof req.query.search === 'string' ? req.query.search.trim() : null;
 
     const query = search
       ? { name: { $regex: search, $options: 'i' } }
-      : {}; // אם אין search - מחזיר הכל
+      : {};
 
     const groups = await Group.find(query);
     res.json(groups);
