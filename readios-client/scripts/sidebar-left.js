@@ -62,7 +62,7 @@ function initSidebarLeft() {
             if (res.ok) {
               await loadGroups();
               groupSearchInput.value = "";
-              groupResultsContainer.innerHTML = "<div class='text-success small'>נוספת לקבוצה</div>";
+              groupResultsContainer.innerHTML = `<div class='text-success small'>נוספת לקבוצה "${group.name}"</div>`;
               setTimeout(() => {
                 groupResultsContainer.innerHTML = "";
               }, 3000);

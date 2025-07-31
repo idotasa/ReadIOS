@@ -69,8 +69,10 @@ function initSidebarRight() {
             if (res.ok) {
               await loadFriends();
               searchInput.value = "";
-              searchResultsContainer.innerHTML =
-                "<div class='text-success small'>נוסף בהצלחה</div>";
+              searchResultsContainer.innerHTML = `<div class='text-success small'>החבר ${user.username} נוסף בהצלחה</div>`;
+              setTimeout(() => {
+                searchResultsContainer.innerHTML = "";
+              }, 3000);
             } else {
               const r = await res.json();
               alert(r.message || "שגיאה בהוספה");
@@ -118,14 +120,12 @@ async function loadFriends() {
 
       div.innerHTML = `
         <div class="d-flex align-items-center">
-          <img src="${
-            friend.profileImage || "./images/default.jpg"
-          }" class="avatar me-2" alt="${friend.username}" />
+          <img src="${friend.profileImage || "./images/default.jpg"}" class="avatar me-2" alt="${friend.username}" />
           <div class="friend-info fw-bold">${friend.username}</div>
         </div>
-        <button class="btn btn-sm delete-btn" data-id="${
-          friend._id
-        }" title="הסר חבר">🗑️</button>
+        <button class="btn p-0 text-danger ms-2 delete-btn" data-id="${friend._id}" title="הסר חבר">
+          <i class="bi bi-trash-fill fs-5"></i>
+        </button>
       `;
 
       container.appendChild(div);
