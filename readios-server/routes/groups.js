@@ -3,7 +3,7 @@ const router = express.Router();
 const {
   createGroup,
   getGroupById,
-  addGroupMembers,
+  addGroupMember,
   searchGroups,
   updateGroup,
   removeMember,
@@ -12,7 +12,7 @@ const {
 
 router.post('/', createGroup); // Create a new group
 router.get('/:id', getGroupById); // Get group details
-router.post('/:id/members', addGroupMembers); // Add members to a group
+router.post('/:groupId/members/:userId', addGroupMember);
 router.get('/', searchGroups); // Search groups by name
 router.put('/:id', updateGroup); // Update group (owner only)
 router.delete('/:id/members/:memberId', removeMember); // Remove member (owner only)
