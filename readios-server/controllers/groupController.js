@@ -59,20 +59,16 @@ const addGroupMember = async (req, res) => {
     const group = await Group.findById(groupId);
     if (!group) return res.status(404).json({ error: 'Group not found' });
 
-    // ניקוי איברים לא תקינים
     group.members = group.members.filter(m => m.user);
 
-    // בדוק אם המשתמש כבר חבר
     const alreadyInGroup = group.members.some(m => m.user?.toString() === userId);
     if (alreadyInGroup) {
       return res.status(400).json({ error: 'User is already in the group' });
     }
 
-    // הוסף לקבוצה
     group.members.push({ user: userId, isAdmin: false });
     await group.save();
 
-    // הוסף לרשימת הקבוצות של המשתמש
     await User.findByIdAndUpdate(userId, { $addToSet: { groups: group._id } });
 
     res.status(200).json({ message: 'User added to group', group });
@@ -136,25 +132,20 @@ const removeMember = async (req, res) => {
       return res.status(404).json({ error: 'Group not found' });
     }
 
-    // מניעת הסרת הבעלים
     if (group.owner.toString() === memberId) {
       return res.status(403).json({ error: 'Cannot remove the group owner' });
     }
 
-    // ניקוי איברים לא תקינים
     group.members = group.members.filter(m => m.user);
 
-    // בדיקה אם המשתמש בכלל חבר בקבוצה
     const isMember = group.members.some(m => m.user?.toString() === memberId);
     if (!isMember) {
       return res.status(400).json({ error: 'User is not a member of the group' });
     }
 
-    // הסרה מהקבוצה
     group.members = group.members.filter(m => m.user?.toString() !== memberId);
     await group.save();
 
-    // הסרה מרשימת הקבוצות של המשתמש
     await User.findByIdAndUpdate(memberId, { $pull: { groups: groupId } });
 
     res.status(200).json({ message: 'Member removed successfully', group });
@@ -177,7 +168,6 @@ const deleteGroup = async (req, res) => {
 
     const memberIds = group.members.map(m => m.user.toString());
 
-    // Remove group from each user's groups list
     await Promise.all(
       memberIds.map(async (id) => {
         try {

@@ -1,5 +1,3 @@
-// sidebar-left.js
-
 function initSidebarLeft() {
   const userId = localStorage.getItem("userId");
 
@@ -57,20 +55,20 @@ function initSidebarLeft() {
 
         item.querySelector("button").addEventListener("click", async () => {
           try {
-            const res = await fetch(`http://localhost:5000/api/groups/${group._id}/members`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ members: [userId] }) // <-- שים לב למערך
+            const res = await fetch(`http://localhost:5000/api/groups/${group._id}/members/${userId}`, {
+              method: "POST"
             });
+
             if (res.ok) {
               await loadGroups();
               groupSearchInput.value = "";
               groupResultsContainer.innerHTML = "<div class='text-success small'>נוספת לקבוצה</div>";
+              setTimeout(() => {
+                groupResultsContainer.innerHTML = "";
+              }, 3000);
             } else {
               const r = await res.json();
-              alert(r.message || "שגיאה בהצטרפות");
+              alert(r.message || r.error || "שגיאה בהצטרפות");
             }
           } catch (err) {
             console.error("Join group error:", err);
@@ -109,17 +107,46 @@ async function loadGroups() {
 
     data.groups.forEach(group => {
       const div = document.createElement("div");
-      div.className = "group-item d-flex align-items-center mb-2";
+      div.className = "group-item d-flex align-items-center mb-2 justify-content-between";
       div.dataset.id = group._id;
 
-      div.innerHTML = `
+      const groupInfo = document.createElement("div");
+      groupInfo.className = "d-flex align-items-center group-click";
+      groupInfo.style.cursor = "pointer";
+      groupInfo.innerHTML = `
         <img src="${group.image || './images/default-group.png'}" class="me-2" />
         <span class="fw-bold">${group.name}</span>
       `;
-
-      div.addEventListener("click", () => {
+      groupInfo.addEventListener("click", () => {
         window.location.href = `/groups/${group._id}`;
       });
+
+      const leaveBtn = document.createElement("button");
+      leaveBtn.className = "btn p-0 ms-2 text-danger";
+      leaveBtn.innerHTML = '<i class="bi bi-door-open-fill fs-5"></i>';
+      leaveBtn.title = "עזוב קבוצה";
+
+      leaveBtn.addEventListener("click", async (e) => {
+        e.stopPropagation();
+
+        try {
+          const res = await fetch(`http://localhost:5000/api/groups/${group._id}/members/${userId}`, {
+            method: "DELETE"
+          });
+
+          if (res.ok) {
+            await loadGroups();
+          } else {
+            const r = await res.json();
+            alert(r.message || r.error || "שגיאה בעזיבת קבוצה");
+          }
+        } catch (err) {
+          console.error("Error leaving group:", err);
+        }
+      });
+
+      div.appendChild(groupInfo);
+      div.appendChild(leaveBtn);
 
       container.appendChild(div);
     });
