@@ -1,77 +1,41 @@
 function initFeed() {
-  const openFormBtn = document.getElementById('openPostFormBtn');
-  const formContainer = document.getElementById('postFormContainer');
+  const fakeInput = document.getElementById('fakeInput');
+  const postModal = document.getElementById('postModal');
+  const modalContent = document.querySelector('.modal-content');
   const cancelBtn = document.getElementById('cancelPostBtn');
   const postForm = document.getElementById('postForm');
-  const feedArea = document.querySelector('.feed-area');
-  const emptyFeedMessage = document.getElementById('empty-feed-message');
 
-  if (!openFormBtn || !formContainer || !cancelBtn || !postForm) {
-    console.warn("topbar elements not found - make sure HTML is loaded first");
-    return;
-  }
-
-  openFormBtn.addEventListener('click', () => {
-    formContainer.style.display = 'flex';
-    openFormBtn.style.display = 'none';
+  // פתיחה
+  fakeInput.addEventListener('click', () => {
+    postModal.classList.remove('hidden');
   });
 
+  // סגירה בלחיצה על ביטול
   cancelBtn.addEventListener('click', () => {
-    formContainer.style.display = 'none';
-    openFormBtn.style.display = 'inline-block';
     postForm.reset();
+    postModal.classList.add('hidden');
   });
 
-  postForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const title = postForm.title.value.trim();
-    const content = postForm.content.value.trim();
-
-    if (!title || !content) {
-      alert('אנא מלא את כל השדות');
-      return;
-    }
-
-    try {
-      const response = await fetch('/api/posts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, content, type: 'text' })
-      });
-
-      if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.message || 'שגיאה ביצירת הפוסט');
-      }
-
-      const newPost = await response.json();
-      addPostToFeed(newPost);
-
+  // סגירה בלחיצה מחוץ לחלון
+  postModal.addEventListener('click', (e) => {
+    if (!modalContent.contains(e.target)) {
       postForm.reset();
-      formContainer.style.display = 'none';
-      openFormBtn.style.display = 'inline-block';
-      if (emptyFeedMessage) emptyFeedMessage.style.display = 'none';
-
-    } catch (error) {
-      alert(error.message);
+      postModal.classList.add('hidden');
     }
   });
 
-  function addPostToFeed(post) {
-    const postDiv = document.createElement('div');
-    postDiv.className = 'post-card';
-    postDiv.setAttribute('data-type', post.type || 'text');
-    postDiv.innerHTML = `
-      <h5>${escapeHtml(post.title)}</h5>
-      <p>${escapeHtml(post.content)}</p>
-      <small>נוצר בתאריך: ${new Date(post.createdAt).toLocaleString()}</small>
-    `;
-    feedArea.insertBefore(postDiv, feedArea.firstChild);
-  }
+  // שליחת הפוסט
+  postForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const title = document.getElementById('postTitle').value;
+    const content = document.getElementById('postContent').value;
 
-  function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
+    console.log("פוסט נשלח:", { title, content });
+
+    // שליחה לשרת תוכל להוסיף כאן
+    postForm.reset();
+    postModal.classList.add('hidden');
+  });
 }
+
+document.addEventListener('DOMContentLoaded', initPostModal);
