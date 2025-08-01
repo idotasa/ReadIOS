@@ -18,7 +18,6 @@
   background-color: #e4e6eb;
 }
 
-/* שכבת רקע חצי שקופה */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -32,7 +31,6 @@
   z-index: 999;
 }
 
-/* תוכן המודאל */
 .modal-content {
   background: white;
   border-radius: 0.75rem;
@@ -44,7 +42,6 @@
   direction: rtl;
 }
 
-/* כותרת */
 .modal-content h2 {
   margin-top: 0;
   margin-bottom: 1rem;
@@ -52,7 +49,6 @@
   text-align: center;
 }
 
-/* שדות טופס */
 .modal-content input,
 .modal-content textarea,
 .modal-content select {
@@ -70,7 +66,6 @@ textarea {
   resize: vertical;
 }
 
-/* כפתורים */
 .form-buttons {
   display: flex;
   justify-content: flex-end;
@@ -105,12 +100,10 @@ textarea {
   background-color: #d8dadf;
 }
 
-/* הסתרה */
 .hidden {
   display: none;
 }
 
-/* גלריית תמונות וסרטונים */
 .media-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
