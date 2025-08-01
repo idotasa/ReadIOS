@@ -73,7 +73,27 @@
   background-color: #e4e6eb;
 }
 
-/* הסתרה */
 .hidden {
   display: none;
 }
+
+.media-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 0.5rem;
+}
+
+.media-grid img,
+.media-grid video {
+  width: 100%;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: 0.2s;
+}
+
+.media-grid img.selected,
+.media-grid video.selected {
+  border-color: #1877f2;
+}
+

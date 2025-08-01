@@ -1,65 +1,138 @@
-function initCreatePost(){
-    const fakeInput = document.getElementById('fakeInput');
-    const postModal = document.getElementById('postModal');
-    const modalContent = document.querySelector('.modal-content');
-    const cancelBtn = document.getElementById('cancelPostBtn');
-    const postForm = document.getElementById('postForm');
+function initCreatePost() {
+  const fakeInput = document.getElementById('fakeInput');
+  const postModal = document.getElementById('postModal');
+  const modalContent = document.querySelector('.modal-content');
+  const cancelBtn = document.getElementById('cancelPostBtn');
+  const postForm = document.getElementById('postForm');
 
-    // פתיחה
-    fakeInput.addEventListener('click', () => {
-        postModal.classList.remove('hidden');
+  const postType = document.getElementById('postType');
+  const contentField = document.getElementById('postContent');
+  const mediaGallery = document.getElementById('mediaGallery');
+  const mediaOptions = document.getElementById('mediaOptions');
+  const postUrlInput = document.getElementById('postUrl');
+
+  const images = [
+    'images/books/book1.png',
+    'images/books/book2.png',
+    'images/books/book3.png',
+    'images/books/book4.png',
+    //'images/books/book5.png',
+    'images/books/book6.png',
+    'images/books/book7.png',
+    'images/books/book8.png',
+    'images/books/book9.png',
+    //'images/books/book10.png'
+  ];
+
+  const videos = [
+    '/assets/vid1.mp4',
+    '/assets/vid2.mp4'
+  ];
+
+  fakeInput.addEventListener('click', () => {
+    postModal.classList.remove('hidden');
+    updateFormFields(); // לעדכן את השדות מיד עם פתיחה
+  });
+
+  cancelBtn.addEventListener('click', () => {
+    closeModal();
+  });
+
+  postModal.addEventListener('click', (e) => {
+    if (!modalContent.contains(e.target)) {
+      closeModal();
+    }
+  });
+
+  function closeModal() {
+    postModal.classList.add('hidden');
+    postForm.reset();
+    mediaOptions.innerHTML = '';
+    postUrlInput.value = '';
+  }
+
+  postType.addEventListener('change', updateFormFields);
+
+  function updateFormFields() {
+    const type = postType.value;
+
+    // תוכן יופיע רק כשיש טקסט
+    if (type.includes('text')) {
+      contentField.style.display = 'block';
+      contentField.required = true;
+    } else {
+      contentField.style.display = 'none';
+      contentField.required = false;
+      contentField.value = '';
+    }
+
+    // מדיה תוצג אם יש image/video
+    if (type.includes('image') || type.includes('video')) {
+      mediaGallery.classList.remove('hidden');
+      renderMedia(type.includes('video') ? videos : images, type.includes('video') ? 'video' : 'img');
+    } else {
+      mediaGallery.classList.add('hidden');
+      mediaOptions.innerHTML = '';
+      postUrlInput.value = '';
+    }
+  }
+
+  function renderMedia(items, mediaType) {
+    mediaOptions.innerHTML = '';
+
+    items.forEach(src => {
+      const el = document.createElement(mediaType);
+      el.src = src;
+      if (mediaType === 'video') el.controls = true;
+      el.classList.add('media-item');
+
+      el.addEventListener('click', () => {
+        mediaOptions.querySelectorAll(mediaType).forEach(e => e.classList.remove('selected'));
+        el.classList.add('selected');
+        postUrlInput.value = src;
+      });
+
+      mediaOptions.appendChild(el);
     });
+  }
 
-    // סגירה בלחיצה על ביטול
-    cancelBtn.addEventListener('click', () => {
-        postModal.classList.add('hidden');
-        postForm.reset();
-    });
+  postForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-    // סגירה בלחיצה מחוץ לחלון
-    postModal.addEventListener('click', (e) => {
-        if (!modalContent.contains(e.target)) {
-        postModal.classList.add('hidden');
-        postForm.reset();
-        }
-    });
+    const title = document.getElementById('postTitle').value.trim();
+    const content = document.getElementById('postContent').value.trim();
+    const type = postType.value;
+    const url = postUrlInput.value;
+    const userId = "USER_ID_HERE"; // לקבל מהמשתמש המחובר
+    const groupId = null;
 
-    // שליחת הפוסט
-    postForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const title = document.getElementById('postTitle').value.trim();
-        const content = document.getElementById('postContent').value.trim();
-        const type = document.getElementById('postType').value;
-        const userId = "USER_ID_HERE"; // תקבל מהמשתמש המחובר
-        const groupId = null; // או קבוצה אם יש
+    if (!title || (type.includes('text') && !content)) {
+      alert("נא למלא כותרת ותוכן (אם נדרש).");
+      return;
+    }
 
-        if (!title || !content) {
-        alert("נא למלא כותרת ותוכן.");
-        return;
-        }
+    if ((type.includes('image') || type.includes('video')) && !url) {
+      alert("יש לבחור מדיה.");
+      return;
+    }
 
-        // בקשת POST לשרת
-        try {
-        const res = await fetch('/api/posts', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title, content, type, userId, groupId })
-        });
+    try {
+      const res = await fetch('/api/posts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, content, type, url, userId, groupId })
+      });
 
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
 
-        alert("✅ פוסט נוצר בהצלחה");
-        postModal.classList.add('hidden');
-        postForm.reset();
+      alert("✅ פוסט נוצר בהצלחה");
+      closeModal();
 
-        } catch (err) {
-            alert(" שגיאה ביצירת פוסט: " + err.message);
-        }
-        
-        console.log("פוסט נשלח:", { title, content });
+    } catch (err) {
+      alert("שגיאה ביצירת פוסט: " + err.message);
+    }
 
-        postForm.reset();
-        postModal.classList.add('hidden');
-    });
+    console.log("פוסט נשלח:", { title, content, type, url });
+  });
 }

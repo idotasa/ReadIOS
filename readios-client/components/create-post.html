@@ -3,23 +3,31 @@
     <div class="modal-content">
         <form id="postForm">
         <h2>יצירת פוסט</h2>
+
+        <select id="postType" required>
+            <option value="text">טקסט</option>
+            <option value="image">תמונה</option>
+            <option value="video">וידאו</option>
+            <option value="image+text">תמונה + טקסט</option>
+            <option value="video+text">וידאו + טקסט</option>
+        </select>
+
         <input type="text" id="postTitle" placeholder="כותרת הפוסט" required />
-    <textarea id="postContent" placeholder="תוכן הפוסט" required></textarea>
 
-    <!-- שדה לבחירת סוג הפוסט -->
-    <select id="postType" required>
-        <option value="text">טקסט</option>
-        <option value="image">תמונה</option>
-        <option value="video">וידאו</option>
-        <option value="image+text">תמונה + טקסט</option>
-        <option value="video+text">וידאו + טקסט</option>
-    </select>
+        <textarea id="postContent" placeholder="תוכן הפוסט"></textarea>
 
-    <div class="form-buttons">
-        <button type="submit">פרסם</button>
-        <button type="button" id="cancelPostBtn">ביטול</button>
+        <div id="mediaGallery" class="hidden">
+            <p>בחר מתוך הגלריה:</p>
+            <div id="mediaOptions" class="media-grid"></div>
         </div>
-        </form>
-    </div>
+
+        <input type="hidden" id="postUrl" />
+
+        <div class="form-buttons">
+            <button type="submit">פרסם</button>
+            <button type="button" id="cancelPostBtn">ביטול</button>
+            </div>
+            </form>
+        </div>
     </div>
 </header>
