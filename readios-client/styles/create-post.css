@@ -1,5 +1,6 @@
 /* create-post.css */
 
+#create-post-btn,
 #fakeInput {
   background-color: #f0f2f5;
   padding: 0.75rem 1rem;
@@ -8,13 +9,16 @@
   cursor: pointer;
   transition: background-color 0.2s ease;
   width: 100%;
+  text-align: right;
+  font-size: 1rem;
 }
 
-#fakeInput:hover {
+#fakeInput:hover,
+#create-post-btn:hover {
   background-color: #e4e6eb;
 }
 
-/* שכבת overlay */
+/* שכבת רקע חצי שקופה */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -36,11 +40,22 @@
   width: 90%;
   max-width: 500px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.25s ease;
+  direction: rtl;
 }
 
-/* טופס */
+/* כותרת */
+.modal-content h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.4rem;
+  text-align: center;
+}
+
+/* שדות טופס */
 .modal-content input,
-.modal-content textarea {
+.modal-content textarea,
+.modal-content select {
   width: 100%;
   padding: 0.75rem;
   margin-bottom: 1rem;
@@ -50,10 +65,17 @@
   direction: rtl;
 }
 
+textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* כפתורים */
 .form-buttons {
   display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
+  margin-top: 1rem;
 }
 
 .form-buttons button {
@@ -62,6 +84,8 @@
   border-radius: 0.5rem;
   font-weight: bold;
   cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s ease;
 }
 
 .form-buttons button[type="submit"] {
@@ -69,18 +93,29 @@
   color: white;
 }
 
+.form-buttons button[type="submit"]:hover {
+  background-color: #145dc9;
+}
+
 .form-buttons button[type="button"] {
   background-color: #e4e6eb;
 }
 
+.form-buttons button[type="button"]:hover {
+  background-color: #d8dadf;
+}
+
+/* הסתרה */
 .hidden {
   display: none;
 }
 
+/* גלריית תמונות וסרטונים */
 .media-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   gap: 0.5rem;
+  margin-top: 0.5rem;
 }
 
 .media-grid img,
@@ -89,7 +124,8 @@
   border-radius: 0.5rem;
   cursor: pointer;
   border: 2px solid transparent;
-  transition: 0.2s;
+  transition: border-color 0.2s;
+  object-fit: cover;
 }
 
 .media-grid img.selected,
@@ -97,3 +133,14 @@
   border-color: #1877f2;
 }
 
+/* אנימציה */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
