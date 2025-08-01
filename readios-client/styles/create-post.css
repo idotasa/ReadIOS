@@ -1,0 +1,139 @@
+/* create-post.css */
+
+#create-post-btn,
+#fakeInput {
+  background-color: #f0f2f5;
+  padding: 0.75rem 1rem;
+  border-radius: 1.5rem;
+  color: #65676b;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  width: 100%;
+  text-align: right;
+  font-size: 1rem;
+}
+
+#fakeInput:hover,
+#create-post-btn:hover {
+  background-color: #e4e6eb;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 0.75rem;
+  padding: 2rem;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.25s ease;
+  direction: rtl;
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.4rem;
+  text-align: center;
+}
+
+.modal-content input,
+.modal-content textarea,
+.modal-content select {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  direction: rtl;
+}
+
+textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.form-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.form-buttons button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s ease;
+}
+
+.form-buttons button[type="submit"] {
+  background-color: #1877f2;
+  color: white;
+}
+
+.form-buttons button[type="submit"]:hover {
+  background-color: #145dc9;
+}
+
+.form-buttons button[type="button"] {
+  background-color: #e4e6eb;
+}
+
+.form-buttons button[type="button"]:hover {
+  background-color: #d8dadf;
+}
+
+.hidden {
+  display: none;
+}
+
+.media-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.media-grid img,
+.media-grid video {
+  width: 100%;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.2s;
+  object-fit: cover;
+}
+
+.media-grid img.selected,
+.media-grid video.selected {
+  border-color: #1877f2;
+}
+
+/* אנימציה */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
