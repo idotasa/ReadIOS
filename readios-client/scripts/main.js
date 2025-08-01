@@ -34,6 +34,13 @@ async function loadAllComponents() {
     } else {
         console.warn("initFeed function not found in feed.js");
     }
+
+    await loadComponent('create-post-container', 'components/create-post.html');
+    if (typeof initCreatePost === 'function') {
+        initCreatePost();
+    } else {
+        console.warn("initCreatePost function not found in create-post.js");
+    }
     
 }
 
