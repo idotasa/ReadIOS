@@ -2,7 +2,6 @@ const Group = require('../models/Group');
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
-// Create a new group
 const createGroup = async (req, res) => {
   try {
     const { name, description } = req.body;
@@ -13,7 +12,7 @@ const createGroup = async (req, res) => {
       name,
       description,
       owner: userId,
-      members: [{ user: userId, isAdmin: true }] // ✅ תיקון כאן
+      members: [{ user: userId, isAdmin: true }]
     });
 
     await group.save();
@@ -24,7 +23,6 @@ const createGroup = async (req, res) => {
   }
 };
 
-// Get group by ID
 const getGroupById = async (req, res) => {
   try {
     const group = await Group.findById(req.params.id).populate('members.user', 'username');
@@ -52,38 +50,43 @@ const getGroupById = async (req, res) => {
   }
 };
 
-// Add members to group
-const addGroupMembers = async (req, res) => {
+
+const addGroupMember = async (req, res) => {
   try {
-    const group = await Group.findById(req.params.id);
+    const groupId = req.params.groupId;
+    const userId = req.params.userId;
+
+    const group = await Group.findById(groupId);
     if (!group) return res.status(404).json({ error: 'Group not found' });
 
-    const newMembers = req.body.members; // Array of user IDs
+    group.members = group.members.filter(m => m.user);
 
-    newMembers.forEach(id => {
-      const alreadyInGroup = group.members.some(m => m.user.toString() === id);
-      if (!alreadyInGroup) {
-        group.members.push({ user: id, isAdmin: false });
-      }
-    });
+    const alreadyInGroup = group.members.some(m => m.user?.toString() === userId);
+    if (alreadyInGroup) {
+      return res.status(400).json({ error: 'User is already in the group' });
+    }
 
+    group.members.push({ user: userId, isAdmin: false });
     await group.save();
-    res.json(group);
+
+    await User.findByIdAndUpdate(userId, { $addToSet: { groups: group._id } });
+
+    res.status(200).json({ message: 'User added to group', group });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to add members', details: err.message });
+    console.error('❌ Failed to add member:', err.message);
+    res.status(500).json({ error: 'Failed to add member', details: err.message });
   }
 };
 
 
-// Search groups
+
 const searchGroups = async (req, res) => {
   try {
     const search = typeof req.query.search === 'string' ? req.query.search.trim() : null;
 
     const query = search
       ? { name: { $regex: search, $options: 'i' } }
-      : {}; // אם אין search - מחזיר הכל
+      : {};
 
     const groups = await Group.find(query);
     res.json(groups);
@@ -118,40 +121,62 @@ const updateGroup = async (req, res) => {
   }
 };
 
-// Remove member from group (owner only)
+
 const removeMember = async (req, res) => {
   try {
-    const group = await Group.findById(req.params.id);
-    if (!group) return res.status(404).json({ error: 'Group not found' });
-
-    if (group.owner.toString() !== req.user.id) {
-      return res.status(403).json({ error: 'Only the group owner can remove members' });
-    }
-
+    const groupId = req.params.id;
     const memberId = req.params.memberId;
 
-    // סינון על פי m.user
-    group.members = group.members.filter(
-      m => m.user.toString() !== memberId
-    );
+    const group = await Group.findById(groupId);
+    if (!group) {
+      return res.status(404).json({ error: 'Group not found' });
+    }
 
+    if (group.owner.toString() === memberId) {
+      return res.status(403).json({ error: 'Cannot remove the group owner' });
+    }
+
+    group.members = group.members.filter(m => m.user);
+
+    const isMember = group.members.some(m => m.user?.toString() === memberId);
+    if (!isMember) {
+      return res.status(400).json({ error: 'User is not a member of the group' });
+    }
+
+    group.members = group.members.filter(m => m.user?.toString() !== memberId);
     await group.save();
-    res.json({ message: 'Member removed', group });
+
+    await User.findByIdAndUpdate(memberId, { $pull: { groups: groupId } });
+
+    res.status(200).json({ message: 'Member removed successfully', group });
   } catch (err) {
+    console.error('❌ Failed to remove member:', err.message);
     res.status(500).json({ error: 'Failed to remove member', details: err.message });
   }
 };
 
+
 const deleteGroup = async (req, res) => {
   try {
-    const userId = decoded.id;
-
+    const userId = req.user.id;
     const group = await Group.findById(req.params.id);
     if (!group) return res.status(404).json({ error: 'Group not found' });
 
     if (group.owner.toString() !== userId) {
       return res.status(403).json({ error: 'Only the group owner can delete the group' });
     }
+
+    const memberIds = group.members.map(m => m.user.toString());
+
+    await Promise.all(
+      memberIds.map(async (id) => {
+        try {
+          await User.findByIdAndUpdate(id, { $pull: { groups: group._id } });
+        } catch (err) {
+          console.warn(`⚠️ Could not update user ${id}: ${err.message}`);
+        }
+      })
+    );
 
     await group.deleteOne();
     res.json({ message: 'Group deleted successfully' });
@@ -161,10 +186,12 @@ const deleteGroup = async (req, res) => {
   }
 };
 
+
+
 module.exports = {
   createGroup,
   getGroupById,
-  addGroupMembers,
+  addGroupMember,
   searchGroups,
   updateGroup,
   removeMember,

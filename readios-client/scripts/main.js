@@ -1,27 +1,42 @@
-// טוען את הרכיבים לתוך ה-HTML
+
 async function loadComponent(id, path) {
-  const res = await fetch(path);
-  const html = await res.text();
-  document.getElementById(id).innerHTML = html;
+    const res = await fetch(path);
+    const html = await res.text();
+    document.getElementById(id).innerHTML = html;
 }
 
-loadComponent('topbar-placeholder', 'components/topbar.html');
-loadComponent('sidebar-left-placeholder', 'components/sidebar-left.html');
-loadComponent('sidebar-right-placeholder', 'components/sidebar-right.html');
-loadComponent('feed-placeholder', 'components/feed.html');
 
 async function loadAllComponents() {
-  await loadComponent('topbar-placeholder', 'components/topbar.html');
-  initTopbar(); // כאן תפעיל את ה־JS של הטופבר
+    await loadComponent('topbar-placeholder', 'components/topbar.html');
+    if (typeof initTopbar === 'function') {
+        initTopbar();
+    } else {
+        console.warn("initTopbar function not found in topbar.js");
+    }
 
-  await loadComponent('sidebar-left-placeholder', 'components/sidebar-left.html');
-  initSidebarLeft(); // אם יש
+    await loadComponent('sidebar-left-placeholder', 'components/sidebar-left.html');
+    if (typeof initSidebarLeft === 'function') {
+        initSidebarLeft();
+    } else {
+        console.warn("initSidebarLeft function not found in sidebar-left.js");
+    }
 
-  await loadComponent('sidebar-right-placeholder', 'components/sidebar-right.html');
-  initSidebarRight(); // אם יש
+    await loadComponent('sidebar-right-container', 'components/sidebar-right.html');
+    if (typeof initSidebarRight === 'function') {
+        initSidebarRight();
+    } else {
+        console.error("initSidebarRight function not found in sidebar-right.js. Is sidebar-right.js loaded correctly?");
+    }
 
-  await loadComponent('feed-placeholder', 'components/feed.html');
-  initFeed(); // אם יש
+    await loadComponent('feed-placeholder', 'components/feed.html');
+    if (typeof initFeed === 'function') {
+        initFeed();
+    } else {
+        console.warn("initFeed function not found in feed.js");
+    }
+    
 }
 
-loadAllComponents();
+document.addEventListener("DOMContentLoaded", () => {
+    loadAllComponents();
+});

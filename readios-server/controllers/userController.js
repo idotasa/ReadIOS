@@ -2,6 +2,7 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { fetchUserById } = require('../utils');
+const Group = require('../models/Group');
 
 exports.registerUser = async (req, res) => {
   try {
@@ -169,5 +170,44 @@ exports.searchUsersContainsName = async (req, res) => {
     res.json(users);
   } catch (err) {
     res.status(500).json({ message: 'Search failed', error: err.message });
+  }
+};
+
+
+exports.GetUserFriends = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).populate('friends', 'username profileImage');
+
+    const friends = user.friends.map(f => ({
+      _id: f._id,
+      username: f.username,
+      profileImage: f.profileImage
+    }));
+
+    res.json({ friends });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch friends', error: err.message });
+  }
+};
+
+
+exports.getUserGroupPreviews = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const groups = await Group.find({ 'members.user': userId })
+      .select('name _id')
+      .lean();
+
+    const groupPreviews = groups.map(group => ({
+      _id: group._id,
+      name: group.name,
+      image: group.image || null
+    }));
+
+    res.json({ groups: groupPreviews });
+  } catch (err) {
+    console.error("Error fetching group previews:", err);
+    res.status(500).json({ message: "שגיאה בקבלת קבוצות" });
   }
 };
