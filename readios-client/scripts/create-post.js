@@ -31,7 +31,7 @@ function initCreatePost() {
 
   fakeInput.addEventListener('click', () => {
     postModal.classList.remove('hidden');
-    updateFormFields(); // לעדכן את השדות מיד עם פתיחה
+    updateFormFields(); 
   });
 
   cancelBtn.addEventListener('click', () => {
@@ -56,7 +56,6 @@ function initCreatePost() {
   function updateFormFields() {
     const type = postType.value;
 
-    // תוכן יופיע רק כשיש טקסט
     if (type.includes('text')) {
       contentField.style.display = 'block';
       contentField.required = true;
@@ -66,7 +65,6 @@ function initCreatePost() {
       contentField.value = '';
     }
 
-    // מדיה תוצג אם יש image/video
     if (type.includes('image') || type.includes('video')) {
       mediaGallery.classList.remove('hidden');
       renderMedia(type.includes('video') ? videos : images, type.includes('video') ? 'video' : 'img');
@@ -103,36 +101,52 @@ function initCreatePost() {
     const content = document.getElementById('postContent').value.trim();
     const type = postType.value;
     const url = postUrlInput.value;
-    const userId = "USER_ID_HERE"; // לקבל מהמשתמש המחובר
+    const userId = "USER_ID_HERE";
     const groupId = null;
 
     if (!title || (type.includes('text') && !content)) {
-      alert("נא למלא כותרת ותוכן (אם נדרש).");
-      return;
+        alert("נא למלא כותרת ותוכן (אם נדרש).");
+        return;
     }
 
     if ((type.includes('image') || type.includes('video')) && !url) {
-      alert("יש לבחור מדיה.");
-      return;
+        alert("יש לבחור מדיה.");
+        return;
     }
 
     try {
-      const res = await fetch('/api/posts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, content, type, url, userId, groupId })
-      });
+        const res = await fetch('http://localhost:5000/api/posts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, content, type, url, userId, groupId })
+        });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
+        const contentType = res.headers.get('content-type');
+        let data;
+        if (contentType && contentType.includes('application/json')) {
+            data = await res.json();
+        } else {
+            const text = await res.text();
+            throw new Error(`Unexpected response: ${res.status} ${text}`);
+        }
 
-      alert("✅ פוסט נוצר בהצלחה");
-      closeModal();
+        if (!res.ok) throw new Error(data.message);
 
-    } catch (err) {
-      alert("שגיאה ביצירת פוסט: " + err.message);
-    }
+        alert("✅ פוסט נוצר בהצלחה");
+        closeModal();
 
-    console.log("פוסט נשלח:", { title, content, type, url });
-  });
+        if (typeof window.addPostToFeed === 'function') {
+            window.addPostToFeed(data);
+        }
+
+        if (typeof renderPost === 'function') {
+            renderPost(data); 
+        }
+
+        } catch (err) {
+        alert("שגיאה ביצירת פוסט: " + err.message);
+        }
+
+        console.log("פוסט נשלח:", { title, content, type, url });
+    });
 }
