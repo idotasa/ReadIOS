@@ -11,6 +11,8 @@ function initCreatePost() {
   const mediaOptions = document.getElementById('mediaOptions');
   const postUrlInput = document.getElementById('postUrl');
 
+  
+
   const images = [
     'images/books/book1.png',
     'images/books/book2.png',
@@ -101,7 +103,7 @@ function initCreatePost() {
     const content = document.getElementById('postContent').value.trim();
     const type = postType.value;
     const url = postUrlInput.value;
-    const userId = "USER_ID_HERE";
+    const userId = localStorage.getItem("userId");
     const groupId = null;
 
     if (!title || (type.includes('text') && !content)) {
@@ -114,6 +116,7 @@ function initCreatePost() {
         return;
     }
 
+    
     try {
         const res = await fetch('http://localhost:5000/api/posts', {
             method: 'POST',

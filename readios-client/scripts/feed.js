@@ -17,11 +17,12 @@ function initFeed() {
 
       const userImage = post.user?.avatarUrl || '/default-avatar.png'; // או לפי userId
       const createdAt = new Date(post.createdAt).toLocaleString();
+      const type = post.type || '';
 
       let mediaHTML = '';
-      if (post.type.includes('image')) {
+      if (type.includes('image')) {
         mediaHTML += `<img src="${post.url}" class="post-media" />`;
-      } else if (post.type.includes('video')) {
+      } else if (type.includes('video')) {
         mediaHTML += `<video src="${post.url}" controls class="post-media"></video>`;
       }
 
