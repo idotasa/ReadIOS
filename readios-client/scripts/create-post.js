@@ -138,11 +138,11 @@ function initCreatePost() {
         closeModal();
 
         if (typeof window.addPostToFeed === 'function') {
-            window.addPostToFeed(data);
+            window.addPostToFeed(data.post);
         }
 
         if (typeof renderPost === 'function') {
-            renderPost(data); 
+            renderPost(data.post); 
         }
 
         } catch (err) {
