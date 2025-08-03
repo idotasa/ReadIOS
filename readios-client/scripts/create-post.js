@@ -135,7 +135,6 @@ function initCreatePost() {
 
         if (!res.ok) throw new Error(data.message);
 
-        alert("✅ פוסט נוצר בהצלחה");
         closeModal();
 
         if (typeof window.addPostToFeed === 'function') {

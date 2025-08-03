@@ -1,4 +1,5 @@
 const Post = require('../models/Post');
+const User = require('../models/User');
 const { fetchUserById, fetchPostById } = require('../utils');
 
 exports.createPost = async (req, res) => {
@@ -98,5 +99,57 @@ exports.searchPosts = async (req, res) => {
     res.json(posts);
   } catch (err) {
     res.status(500).json({ message: 'Search failed', error: err.message });
+  }
+};
+
+
+exports.getFeedForUser = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const user = await User.findById(userId).lean();
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    const friendIds = user.friends.map(id => id.toString());
+    const groupIds = user.groups.map(id => id.toString());
+
+    // groups
+    const groupPosts = await Post.find({
+      groupId: { $in: groupIds }
+    })
+      .populate('userId', 'username profileImage')
+      .populate('groupId', 'name image')
+      .lean();
+
+    const groupPostIds = new Set(groupPosts.map(p => p._id.toString()));
+
+    // other friends
+    const friendPosts = await Post.find({
+      groupId: { $exists: false },
+      userId: { $in: friendIds }
+    })
+      .populate('userId', 'username profileImage')
+      .lean();
+
+    // user posts
+    const userPosts = await Post.find({ userId })
+      .populate('userId', 'username profileImage')
+      .populate('groupId', 'name image')
+      .lean();
+
+    // validate and remove 
+    const allPostsMap = new Map();
+    [...groupPosts, ...friendPosts, ...userPosts].forEach(post => {
+      allPostsMap.set(post._id.toString(), post);
+    });
+
+    const uniquePosts = Array.from(allPostsMap.values());
+
+    // מיין מהחדש לישן
+    uniquePosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    res.json({ posts: uniquePosts });
+  } catch (err) {
+    console.error('❌ Failed to load feed:', err.message);
+    res.status(500).json({ error: 'Failed to load feed', details: err.message });
   }
 };

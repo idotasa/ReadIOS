@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const commentSchema = new mongoose.Schema({
   userId:    { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   content:   { type: String, required: true },
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: () => new Date(Date.now() + 3 * 60 * 60 * 1000)}
 }, { _id: true });
 
 const postSchema = new mongoose.Schema({
@@ -15,7 +15,7 @@ const postSchema = new mongoose.Schema({
   url:      { type: String }, // Optional URL for image or video
   likes:    [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   comments: [commentSchema],
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: () => new Date(Date.now() + 3 * 60 * 60 * 1000)}
 });
 
 module.exports = mongoose.model('Post', postSchema);
