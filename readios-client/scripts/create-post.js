@@ -138,7 +138,7 @@ function initCreatePost() {
         closeModal();
 
         if (typeof window.addPostToFeed === 'function') {
-            window.addPostToFeed(data.post);
+            window.addPostToFeed(data.post, true);
         }
 
         if (typeof renderPost === 'function') {
