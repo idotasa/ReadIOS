@@ -97,6 +97,30 @@ async function initCreatePost() {
   }
   
   const userId = localStorage.getItem("userId");
+
+  let groupData = []; 
+  const groupSelect = document.getElementById('postGroup');
+  if (groupSelect) {
+    try {
+      const groupRes = await fetch(`http://localhost:5000/api/users/${userId}/groupPreviews`);
+      const groupResJson = await groupRes.json();
+
+      if (groupRes.ok && Array.isArray(groupResJson.groups)) {
+        groupData = groupResJson.groups;
+        groupData.forEach(group => {
+          const option = document.createElement('option');
+          option.value = group._id;
+          option.textContent = group.name;
+          groupSelect.appendChild(option);
+        });
+      } else {
+        console.warn("לא נמצאו קבוצות או שגיאה בתשובה");
+      }
+    } catch (err) {
+      console.error("שגיאה בטעינת הקבוצות:", err);
+    }
+  }
+
   
   const res = await fetch(`http://localhost:5000/api/users/${userId}`);
   const user = await res.json();
@@ -127,7 +151,7 @@ async function initCreatePost() {
     const type = postType.value;
     const url = postUrlInput.value;
     const userId = localStorage.getItem("userId");
-    const groupId = null;
+    const groupId = document.getElementById('postGroup')?.value || null;
 
     if (!title || (type.includes('text') && !content)) {
         alert("נא למלא כותרת ותוכן (אם נדרש).");
@@ -161,6 +185,7 @@ async function initCreatePost() {
 
         if (typeof window.addPostToFeed === 'function') {
             data.post.userId = window.loggedInUser;
+            data.post.groupId = groupData.find(g => g._id === groupId);
             window.addPostToFeed(data.post, true);
         }
 
