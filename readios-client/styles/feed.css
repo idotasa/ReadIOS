@@ -194,3 +194,19 @@
   font-size: 0.85rem;
   margin-bottom: 0.5rem;
 }
+
+.comment-username {
+  font-weight: bold;
+  color: #333;
+  text-align: right;
+  margin-bottom: 0.2rem;
+}
+
+.comment-content {
+  background-color: #f0f2f5;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  word-break: break-word;
+}

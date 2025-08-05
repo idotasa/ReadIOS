@@ -125,7 +125,10 @@ function initFeed() {
 
         const commentDiv = document.createElement('div');
         commentDiv.classList.add('comment');
-        commentDiv.innerHTML = `<strong>${lastComment.userName}:</strong> ${lastComment.content}`;
+        commentDiv.innerHTML = `
+          <span class="comment-username" dir="rtl"><strong>${lastComment.userName}:</strong></span>
+          <span class="comment-content" dir="auto">${lastComment.content}</span>
+        `;
         postCard.querySelector('.comments-list').appendChild(commentDiv);
         input.value = '';
         const commentCountSpan = postCard.querySelector('.comment-count');
