@@ -10,7 +10,7 @@ const groupSchema = new mongoose.Schema({
       isAdmin: { type: Boolean, default: false }
     }
   ],
-  createdAt: { type: Date, default: () => new Date(Date.now())}
+  createdAt: { type: Date, default: Date.now }
 });
 
 module.exports = mongoose.model('Group', groupSchema);
