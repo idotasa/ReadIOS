@@ -212,3 +212,19 @@ async function loadPostsFromServer() {
     console.error('שגיאה בטעינת פוסטים:', err.message);
   }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('scrollToTopBtn');
+
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 300) {
+      btn.style.display = 'flex';
+    } else {
+      btn.style.display = 'none';
+    }
+  });
+
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});

@@ -211,3 +211,28 @@
   line-height: 1.4;
   word-break: break-word;
 }
+
+#scrollToTopBtn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  background-color: #1877f2; /* כחול פייסבוק */
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  display: none; /* יסתיר עד שגלילת דף תגיע */
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+}
+
+#scrollToTopBtn:hover {
+  background-color: #145dbf;
+}
+
