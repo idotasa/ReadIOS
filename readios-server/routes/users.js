@@ -17,3 +17,4 @@ router.delete('/:id/friend/:friendId', removeFriend);
 router.get('/:id/groupPreviews', getUserGroupPreviews);
 
 module.exports = router;
+

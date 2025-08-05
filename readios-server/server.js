@@ -29,3 +29,11 @@ const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`✅ Server on port ${PORT}`));
 
 app.use('/api/groups', groupRoutes);
+
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, '../readios-client/components/login-register.html'));
+});
+
+app.use(express.static(path.join(__dirname, './readios-client')));
+
+
