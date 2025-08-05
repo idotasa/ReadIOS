@@ -1,5 +1,3 @@
-/* topbar.css */
-
 .top-bar {
   background: #ffffff;
   color: #000;
@@ -53,4 +51,32 @@
   height: 48px;
   border-radius: 12px;
   object-fit: cover;
+}
+
+/* מודל קטן, בלי גלילה פנימית, וממוקם קצת למעלה */
+.modal-dialog.modal-sm {
+  max-width: 350px;  /* קטן יותר */
+  margin: 1.5rem auto 1rem auto; /* קצת פחות רווח למעלה ולמטה */
+}
+
+.modal-content {
+  max-height: 80vh; /* גובה מקסימלי של 80% מגובה המסך */
+  overflow-y: hidden; /* מונע גלילה פנימית */
+  padding: 1rem; /* פחות רווח פנימי */
+}
+
+.modal-body {
+  padding: 0.5rem 1rem; /* פחות רווח פנימי בתוך גוף המודל */
+  overflow-y: auto; /* גלילה רק בתוך גוף המודל אם צריך */
+  max-height: 60vh; /* הגבול על גובה גוף המודל */
+}
+
+/* כפתורים ומרווחים קטנים יותר */
+.modal-footer {
+  padding: 0.5rem 1rem;
+}
+
+.modal-header {
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #dee2e6;
 }

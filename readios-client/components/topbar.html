@@ -1,21 +1,88 @@
+<!-- topbar.html -->
 <header class="top-bar">
   <div class="container-fluid d-flex align-items-center justify-content-between px-4">
+
+    <!-- לוגו -->
     <div class="d-flex align-items-center me-auto" style="gap: 0.75rem;">
       <div class="logo-info">
-        <img id="logo-img" src="./images/ReadIOS.jpg" alt="תמונת לוגו " class="logo-img" />
+        <img id="logo-img" src="./images/ReadIOS.jpg" alt="תמונת לוגו" class="logo-img" />
       </div>
       <div class="logo fw-bold fs-2 me-auto">ReadIOS</div>
     </div>
 
+    <!-- חיפוש -->
     <div class="search-container mx-auto" style="max-width: 500px; width: 100%;">
       <input type="text" class="search-bar form-control text-center" placeholder="חיפוש בפיד" />
     </div>
 
-    <div class="d-flex align-items-center ms-auto" style="gap: 0.75rem;">
+    <!-- משתמש -->
+    <div class="d-flex align-items-center user-box ms-auto" style="gap: 0.75rem;">
       <div class="user-info text-end">
-        <div id="current-user">אופיר קאיה</div>
+        <div id="current-user">...</div>
       </div>
-      <img id="profile-img" src="./images/ofir_photo.jpg" alt="תמונת פרופיל" class="avatar" />
+      <img id="profile-img" src="./images/default.png" alt="תמונת פרופיל" class="avatar"
+        data-bs-toggle="modal" data-bs-target="#profileModal" style="cursor: pointer;" />
     </div>
   </div>
 </header>
+
+<!-- Modal Bootstrap -->
+<div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="profileModalLabel">פרופיל משתמש</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="סגור"></button>
+      </div>
+
+      <div class="modal-body">
+        <form id="userProfileForm">
+
+          <div class="text-center mb-3">
+            <img id="modal-profile-image" class="avatar" src="" alt="תמונת פרופיל" style="width: 64px; height: 64px;" />
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label">שם משתמש</label>
+            <input type="text" class="form-control" id="modal-username" disabled>
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label">אימייל</label>
+            <input type="email" class="form-control" id="modal-email">
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label">מיקום</label>
+            <input type="text" class="form-control" id="modal-location">
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label">תמונה</label>
+            <input type="text" class="form-control" id="modal-profileImage" placeholder="image1, image2...">
+          </div>
+
+        </form>
+
+        <!-- כפתורי פעולה -->
+        <div class="d-flex justify-content-between mt-3">
+          <button type="button" class="btn btn-outline-danger btn-sm" id="deleteUserBtn">
+            <i class="bi bi-trash"></i> מחיקת משתמש
+          </button>
+
+          <button type="button" class="btn btn-outline-secondary btn-sm" id="logoutBtn">
+            <i class="bi bi-box-arrow-right"></i> התנתקות
+          </button>
+        </div>
+
+      </div>
+
+      <div class="modal-footer pt-2">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">סגור</button>
+        <button type="button" class="btn btn-primary btn-sm" id="saveProfileBtn">שמור שינויים</button>
+      </div>
+
+    </div>
+  </div>
+</div>
