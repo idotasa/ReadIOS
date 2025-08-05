@@ -5,9 +5,73 @@ async function initTopbar() {
     return;
   }
 
+  // חיפוש
+  document.getElementById("searchBtn").addEventListener("click", async () => {
+    const username = document.getElementById("search-username").value;
+    const location = document.getElementById("search-location").value;
+    const isFriend = document.getElementById("search-isFriend").checked;
+    const groupName = document.getElementById("search-groupName").value;
+    const groupUser = document.getElementById("search-groupUser").value;
+    const postToday = document.getElementById("search-group-postToday").checked;
+
+    const resultsContainer = document.getElementById("topbar-search-results");
+    resultsContainer.innerHTML = "";
+    resultsContainer.style.display = "block";
+
+    // חיפוש משתמשים
+    try {
+      const userParams = new URLSearchParams();
+      if (username) userParams.append("search", username);
+      if (location) userParams.append("location", location);
+      if (isFriend) userParams.append("isFriend", "true");
+
+      const resUsers = await fetch(`http://localhost:5000/api/users?${userParams}`);
+      const users = await resUsers.json();
+
+      users.forEach(user => {
+        const li = document.createElement("li");
+        li.className = "list-group-item d-flex align-items-center gap-2";
+        li.innerHTML = `
+          <img src="../images/users/${user.profileImage || 'default'}.png" width="32" height="32" class="rounded-circle">
+          <div>
+            <div class="fw-bold">${user.username}</div>
+            <small>${user.location || 'מיקום לא צוין'}</small>
+          </div>`;
+        resultsContainer.appendChild(li);
+      });
+    } catch (err) {
+      console.error("שגיאה בחיפוש משתמשים:", err);
+    }
+
+    // חיפוש קבוצות
+    try {
+      const groupParams = new URLSearchParams();
+      if (groupName) groupParams.append("search", groupName);
+      if (groupUser) groupParams.append("hasUserId", groupUser);
+
+      const endpoint = postToday ? "searchWithPostsToday" : "search";
+      const resGroups = await fetch(`http://localhost:5000/api/groups/${endpoint}?${groupParams}`);
+      const groups = await resGroups.json();
+
+      groups.forEach(group => {
+        const li = document.createElement("li");
+        li.className = "list-group-item";
+        li.innerHTML = `
+          <div>
+            <div class="fw-bold">${group.name}</div>
+            <small>${group.description || 'ללא תיאור'}</small>
+          </div>`;
+        resultsContainer.appendChild(li);
+      });
+    } catch (err) {
+      console.error("שגיאה בחיפוש קבוצות:", err);
+    }
+  });
+
+  // טעינת נתוני משתמש
   try {
     const resUser = await fetch(`http://localhost:5000/api/users/${userId}`);
-    if (!resUser.ok) throw new Error(`Invalid userId: ${resUser.status} ${resUser.statusText}`);
+    if (!resUser.ok) throw new Error(`Invalid userId: ${resUser.status}`);
 
     const user = await resUser.json();
     document.getElementById("current-user").textContent = user.username;
@@ -16,15 +80,13 @@ async function initTopbar() {
   } catch (err) {
     console.error("Error on TopBar", err);
     window.location.href = "/login.html";
-    return;
   }
 
+  // מודל פרופיל
   const profileModal = document.getElementById("profileModal");
   profileModal.addEventListener("show.bs.modal", async () => {
     try {
       const res = await fetch(`http://localhost:5000/api/users/${userId}`);
-      if (!res.ok) throw new Error(`Failed to fetch user: ${res.status}`);
-
       const user = await res.json();
 
       document.getElementById("modal-username").value = user.username;
@@ -41,7 +103,6 @@ async function initTopbar() {
       if (!editBtn.dataset.connected) {
         editBtn.addEventListener("click", () => {
           picker.classList.toggle("d-none");
-
           if (picker.dataset.loaded === "true") return;
 
           for (let i = 1; i <= 10; i++) {
@@ -58,7 +119,6 @@ async function initTopbar() {
 
               container.querySelectorAll("img").forEach(im => im.style.border = "2px solid transparent");
               img.style.border = "2px solid #0d6efd";
-
               picker.classList.add("d-none");
             });
 
@@ -75,6 +135,7 @@ async function initTopbar() {
     }
   });
 
+  // שמירה
   document.getElementById("saveProfileBtn").addEventListener("click", async () => {
     const email = document.getElementById("modal-email").value.trim();
     const location = document.getElementById("modal-location").value.trim();
@@ -104,11 +165,13 @@ async function initTopbar() {
     }
   });
 
+  // התנתקות
   document.getElementById("logoutBtn")?.addEventListener("click", () => {
     localStorage.clear();
     window.location.href = "/login.html";
   });
 
+  // מחיקת משתמש
   document.getElementById("deleteUserBtn")?.addEventListener("click", async () => {
     const confirmDelete = confirm("האם אתה בטוח שברצונך למחוק את המשתמש שלך? פעולה זו אינה ניתנת לשחזור.");
     if (!confirmDelete) return;

@@ -152,21 +152,26 @@ exports.removeFriend = async (req, res) => {
   }
 };
 
-
 exports.searchUsersContainsName = async (req, res) => {
   try {
-    const { search } = req.query;
+    const { search, location, groupId } = req.query;
 
-    let users;
-    if (!search) {
-      users = await User.find().select('-password');
-    }
+    const query = {};
 
-    else {
+    if (search) {
       const regex = new RegExp(search, 'i');
-      users = await User.find({ username: { $regex: regex } }).select('-password');
+      query.username = { $regex: regex };
     }
 
+    if (location) {
+      query.location = location;
+    }
+
+    if (groupId) {
+      query.groups = groupId;
+    }
+
+    const users = await User.find(query).select('-password');
     res.json(users);
   } catch (err) {
     res.status(500).json({ message: 'Search failed', error: err.message });

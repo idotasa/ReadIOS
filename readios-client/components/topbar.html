@@ -1,16 +1,16 @@
 <header class="top-bar">
   <div class="container-fluid d-flex align-items-center justify-content-between px-4">
-    <div class="d-flex align-items-center me-auto" style="gap: 0.75rem;">
-      <div class="logo-info">
-        <img id="logo-img" src="./images/ReadIOS.jpg" alt="תמונת לוגו" class="logo-img" />
-      </div>
-      <div class="logo fw-bold fs-2 me-auto">ReadIOS</div>
+    <!-- כפתור חיפוש ממורכז -->
+    <div class="flex-grow-1 d-flex justify-content-center">
+      <button class="btn btn-outline-primary btn-sm w-100" 
+              style="max-width: 400px;" 
+              data-bs-toggle="modal" 
+              data-bs-target="#searchModal">
+        🔍 חיפוש מתקדם
+      </button>
     </div>
 
-    <div class="search-container mx-auto" style="max-width: 500px; width: 100%;">
-      <input type="text" class="search-bar form-control text-center" placeholder="חיפוש בפיד" />
-    </div>
-
+    <!-- פרטי משתמש -->
     <div class="d-flex align-items-center user-box ms-auto" style="gap: 0.75rem;">
       <div class="user-info text-end">
         <div id="current-user">...</div>
@@ -21,120 +21,36 @@
   </div>
 </header>
 
-<!-- MODAL -->
-<div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-sm">
+<!-- תוצאות חיפוש -->
+<ul id="topbar-search-results" class="list-group mx-auto mt-3" style="max-width: 500px; display: none; max-height: 300px; overflow-y: auto;"></ul>
+
+<!-- מודל חיפוש -->
+<div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="profileModalLabel">פרופיל משתמש</h5>
+        <h5 class="modal-title" id="searchModalLabel">חיפוש מתקדם</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="סגור"></button>
       </div>
-
       <div class="modal-body">
-        <form id="userProfileForm">
-          <div class="text-center mb-3 position-relative">
-            <img id="modal-profile-image" class="avatar" src="" alt="תמונת פרופיל" style="width: 64px; height: 64px;" />
-            <button type="button" id="editImageBtn" class="btn btn-sm btn-outline-secondary position-absolute top-0 end-0" style="transform: translate(25%, -25%);" title="ערוך תמונה">
-              <i class="bi bi-pencil"></i>
-            </button>
+        <!-- שדות חיפוש -->
+        <div class="d-flex flex-column gap-3">
+          <input type="text" id="search-username" class="form-control" placeholder="שם משתמש">
+          <input type="text" id="search-location" class="form-control" placeholder="עיר">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="search-isFriend">
+            <label class="form-check-label" for="search-isFriend">חבר שלי</label>
           </div>
-
-          <div id="imagePicker" class="d-none mb-2" data-loaded="false">
-            <div class="d-flex flex-wrap justify-content-center gap-2"></div>
+          <input type="text" id="search-groupName" class="form-control" placeholder="שם קבוצה">
+          <input type="text" id="search-groupUser" class="form-control" placeholder="משתמש שחבר בקבוצה">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="search-group-postToday">
+            <label class="form-check-label" for="search-group-postToday">רק קבוצות עם פוסט מהיום</label>
           </div>
-
-          <div class="mb-2">
-            <label class="form-label">שם משתמש</label>
-            <input type="text" class="form-control" id="modal-username" disabled>
-          </div>
-
-          <div class="mb-2">
-            <label class="form-label">אימייל</label>
-            <input type="email" class="form-control" id="modal-email">
-          </div>
-
-          <div class="mb-2">
-            <label class="form-label" for="modal-location">עיר</label>
-            <select class="form-select" id="modal-location" required>
-              <option value="" disabled selected>בחרי עיר</option>
-              <option value="אופקים">אופקים</option>
-              <option value="אור עקיבא">אור עקיבא</option>
-              <option value="אילת">אילת</option>
-              <option value="אלעד">אלעד</option>
-              <option value="אריאל">אריאל</option>
-              <option value="אשדוד">אשדוד</option>
-              <option value="אשקלון">אשקלון</option>
-              <option value="באקה אל גרביה">באקה אל גרביה</option>
-              <option value="באר שבע">באר שבע</option>
-              <option value="בית שאן">בית שאן</option>
-              <option value="בית שמש">בית שמש</option>
-              <option value="בת ים">בת ים</option>
-              <option value="גבעתיים">גבעתיים</option>
-              <option value="דימונה">דימונה</option>
-              <option value="הוד השרון">הוד השרון</option>
-              <option value="הרצליה">הרצליה</option>
-              <option value="חדרה">חדרה</option>
-              <option value="חולון">חולון</option>
-              <option value="חיפה">חיפה</option>
-              <option value="טבריה">טבריה</option>
-              <option value="טירת כרמל">טירת כרמל</option>
-              <option value="טייבה">טייבה</option>
-              <option value="טמרה">טמרה</option>
-              <option value="יבנה">יבנה</option>
-              <option value="יהוד-מונוסון">יהוד-מונוסון</option>
-              <option value="יקנעם עילית">יקנעם עילית</option>
-              <option value="ירושלים">ירושלים</option>
-              <option value="כפר סבא">כפר סבא</option>
-              <option value="לוד">לוד</option>
-              <option value="מגדל העמק">מגדל העמק</option>
-              <option value="מודיעין">מודיעין</option>
-              <option value="מודיעין עילית">מודיעין עילית</option>
-              <option value="נהריה">נהריה</option>
-              <option value="נס ציונה">נס ציונה</option>
-              <option value="נצרת">נצרת</option>
-              <option value="נשר">נשר</option>
-              <option value="נתיבות">נתיבות</option>
-              <option value="נתניה">נתניה</option>
-              <option value="סח'נין">סח'נין</option>
-              <option value="עכו">עכו</option>
-              <option value="עפולה">עפולה</option>
-              <option value="ערד">ערד</option>
-              <option value="פתח תקווה">פתח תקווה</option>
-              <option value="צפת">צפת</option>
-              <option value="קריית גת">קריית גת</option>
-              <option value="קריית ים">קריית ים</option>
-              <option value="קריית מוצקין">קריית מוצקין</option>
-              <option value="קריית מלאכי">קריית מלאכי</option>
-              <option value="קריית שמונה">קריית שמונה</option>
-              <option value="ראש העין">ראש העין</option>
-              <option value="ראשון לציון">ראשון לציון</option>
-              <option value="רחובות">רחובות</option>
-              <option value="רמלה">רמלה</option>
-              <option value="רמת גן">רמת גן</option>
-              <option value="רעננה">רעננה</option>
-              <option value="שפרעם">שפרעם</option>
-              <option value="תל אביב">תל אביב</option>
-            </select>
-          </div>
-
-
-          <input type="hidden" id="modal-profileImage">
-        </form>
-
-        <div class="d-flex justify-content-between mt-3">
-          <button type="button" class="btn btn-outline-danger btn-sm" id="deleteUserBtn">
-            <i class="bi bi-trash"></i> מחיקת משתמש
-          </button>
-
-          <button type="button" class="btn btn-outline-secondary btn-sm" id="logoutBtn">
-            <i class="bi bi-box-arrow-right"></i> התנתקות
-          </button>
         </div>
       </div>
-
-      <div class="modal-footer pt-2">
-        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">סגור</button>
-        <button type="button" class="btn btn-primary btn-sm" id="saveProfileBtn">שמור שינויים</button>
+      <div class="modal-footer">
+        <button type="button" id="searchBtn" class="btn btn-primary w-100">🔍 חפש</button>
       </div>
     </div>
   </div>
