@@ -110,51 +110,38 @@ window.addEventListener('click', ev => {
 
 
 document.addEventListener("DOMContentLoaded", () => {
-  const profileImageSelect = document.getElementById("reg-profileImage");
-  const previewImg = document.getElementById("profilePreview");
+  const imageContainer = document.getElementById("profileImages");
+  const hiddenInput = document.getElementById("reg-profileImage");
+  const preview = document.getElementById("profilePreview");
 
-  if (profileImageSelect) {
-    profileImageSelect.addEventListener("change", function () {
-      const selected = this.value;
-      if (selected) {
-        previewImg.src = selected;
-        previewImg.style.display = "block";
-      } else {
-        previewImg.style.display = "none";
-        previewImg.src = "";
-      }
+  const imageNames = Array.from({ length: 10 }, (_, i) => `user${i + 1}`);
+
+  imageNames.forEach(name => {
+    const img = document.createElement("img");
+    img.src = `images/users/${name}.png`;
+    img.alt = name;
+    img.classList.add("profile-option");
+    img.style.width = "60px";
+    img.style.height = "60px";
+    img.style.borderRadius = "50%";
+    img.style.margin = "5px";
+    img.style.cursor = "pointer";
+    img.style.border = "2px solid transparent";
+
+    img.addEventListener("click", () => {
+      // הסרת בחירה קודמת
+      document.querySelectorAll(".profile-option").forEach(el => {
+        el.style.border = "2px solid transparent";
+      });
+
+      img.style.border = "2px solid #1877f2";
+
+      hiddenInput.value = name;
+      preview.src = img.src;
+      preview.style.display = "block";
     });
-  }
-  const imagePaths = Array.from({ length: 10 }, (_, i) => `images/users/user${i + 1}.png`);
-const imageContainer = document.getElementById("profileImages");
-const hiddenInput = document.getElementById("reg-profileImage");
-const preview = document.getElementById("profilePreview");
 
-// הוספת התמונות לדף
-imagePaths.forEach(path => {
-  const img = document.createElement("img");
-  img.src = path;
-  img.alt = "User Image";
-  img.classList.add("profile-option");
-  img.style.width = "60px";
-  img.style.height = "60px";
-  img.style.borderRadius = "50%";
-  img.style.margin = "5px";
-  img.style.cursor = "pointer";
-  img.style.border = "2px solid transparent";
-
-  img.addEventListener("click", () => {
-    document.querySelectorAll(".profile-option").forEach(el => {
-      el.style.border = "2px solid transparent";
-    });
-    img.style.border = "2px solid #1877f2";
-
-    hiddenInput.value = path;        
-    preview.src = path;
-    preview.style.display = "block";
+    imageContainer.appendChild(img);
   });
-
-  imageContainer.appendChild(img);
 });
 
-});
