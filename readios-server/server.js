@@ -29,3 +29,6 @@ const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`✅ Server on port ${PORT}`));
 
 app.use('/api/groups', groupRoutes);
+app.use(express.static(path.join(__dirname, './readios-client')));
+
+
