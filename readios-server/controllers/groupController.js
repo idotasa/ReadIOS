@@ -12,6 +12,7 @@ const createGroup = async (req, res) => {
       name,
       description,
       owner: userId,
+      groupeImage,
       members: [{ user: userId, isAdmin: true }]
     });
 
@@ -122,38 +123,38 @@ const updateGroup = async (req, res) => {
 };
 
 
-const removeMember = async (req, res) => {
-  try {
-    const groupId = req.params.id;
-    const memberId = req.params.memberId;
+  const removeMember = async (req, res) => {
+    try {
+      const groupId = req.params.id;
+      const memberId = req.params.memberId;
 
-    const group = await Group.findById(groupId);
-    if (!group) {
-      return res.status(404).json({ error: 'Group not found' });
+      const group = await Group.findById(groupId);
+      if (!group) {
+        return res.status(404).json({ error: 'Group not found' });
+      }
+
+      if (group.owner.toString() === memberId) {
+        return res.status(403).json({ error: 'Cannot remove the group owner' });
+      }
+
+      group.members = group.members.filter(m => m.user);
+
+      const isMember = group.members.some(m => m.user?.toString() === memberId);
+      if (!isMember) {
+        return res.status(400).json({ error: 'User is not a member of the group' });
+      }
+
+      group.members = group.members.filter(m => m.user?.toString() !== memberId);
+      await group.save();
+
+      await User.findByIdAndUpdate(memberId, { $pull: { groups: groupId } });
+
+      res.status(200).json({ message: 'Member removed successfully', group });
+    } catch (err) {
+      console.error('❌ Failed to remove member:', err.message);
+      res.status(500).json({ error: 'Failed to remove member', details: err.message });
     }
-
-    if (group.owner.toString() === memberId) {
-      return res.status(403).json({ error: 'Cannot remove the group owner' });
-    }
-
-    group.members = group.members.filter(m => m.user);
-
-    const isMember = group.members.some(m => m.user?.toString() === memberId);
-    if (!isMember) {
-      return res.status(400).json({ error: 'User is not a member of the group' });
-    }
-
-    group.members = group.members.filter(m => m.user?.toString() !== memberId);
-    await group.save();
-
-    await User.findByIdAndUpdate(memberId, { $pull: { groups: groupId } });
-
-    res.status(200).json({ message: 'Member removed successfully', group });
-  } catch (err) {
-    console.error('❌ Failed to remove member:', err.message);
-    res.status(500).json({ error: 'Failed to remove member', details: err.message });
-  }
-};
+  };
 
 
 const deleteGroup = async (req, res) => {

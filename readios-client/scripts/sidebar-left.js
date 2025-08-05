@@ -47,7 +47,7 @@ function initSidebarLeft() {
         item.className = "list-group-item d-flex align-items-center justify-content-between";
         item.innerHTML = `
           <div class="d-flex align-items-center">
-            <img src="${group.image || './images/default-group.png'}" class="avatar me-2" />
+            <img src="${group.image || '../images/groups/group1.png'}" class="avatar me-2" />
             <span>${group.name}</span>
           </div>
           <button class="btn btn-sm btn-success" data-id="${group._id}">הצטרף</button>
@@ -113,9 +113,10 @@ async function loadGroups() {
       const groupInfo = document.createElement("div");
       groupInfo.className = "d-flex align-items-center group-click";
       groupInfo.style.cursor = "pointer";
+
       groupInfo.innerHTML = `
-        <img src="${group.image || './images/default-group.png'}" class="me-2" />
-        <span class="fw-bold">${group.name}</span>
+      <img src="${`../images/groups/${group.groupImage}.png`}" class="avatar me-2" />
+      <span class="fw-bold">${group.name}</span>
       `;
       groupInfo.addEventListener("click", () => {
         window.location.href = `/groups/${group._id}`;

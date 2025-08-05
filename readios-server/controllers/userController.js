@@ -196,13 +196,13 @@ exports.getUserGroupPreviews = async (req, res) => {
     const userId = req.params.id;
 
     const groups = await Group.find({ 'members.user': userId })
-      .select('name _id')
+      .select('name _id groupImage')
       .lean();
 
     const groupPreviews = groups.map(group => ({
       _id: group._id,
       name: group.name,
-      image: group.image || null
+      groupImage: group.groupImage || null
     }));
 
     res.json({ groups: groupPreviews });
