@@ -1,18 +1,15 @@
 const Group = require('../models/Group');
 const User = require('../models/User');
-const jwt = require('jsonwebtoken');
 
 const createGroup = async (req, res) => {
   try {
-    const { name, description } = req.body;
-
-    const userId = decoded.id;
+    const { userId, name, description, groupImage } = req.body;
 
     const group = new Group({
       name,
       description,
       owner: userId,
-      groupeImage,
+      groupImage,
       members: [{ user: userId, isAdmin: true }]
     });
 
