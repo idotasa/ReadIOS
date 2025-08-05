@@ -16,7 +16,7 @@ exports.createPost = async (req, res) => {
       userId,
       groupId: groupId || undefined,      
       title,
-      content,
+      content: content || "",
       type,
       url
     });
