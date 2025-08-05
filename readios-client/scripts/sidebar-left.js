@@ -6,9 +6,80 @@ function initSidebarLeft() {
   const groupSearchInput = document.getElementById("groupSearchInput");
   const groupResultsContainer = document.getElementById("groupSearchResults");
 
-  if (!addGroupBtn || !groupSearchSection || !groupSearchInput || !groupResultsContainer) {
-    console.error("Sidebar Left elements not found");
-    return;
+  const openModalBtn = document.getElementById("openCreateGroupModal");
+  const createGroupModal = document.getElementById("createGroupModal");
+  const cancelCreateGroupBtn = document.getElementById("cancelCreateGroupBtn");
+  const createGroupForm = document.getElementById("createGroupForm");
+
+  // פתיחת המודל
+  openModalBtn.addEventListener("click", () => {
+    createGroupModal.classList.remove("hidden");
+  });
+
+  // סגירת המודל
+  cancelCreateGroupBtn.addEventListener("click", () => {
+    createGroupModal.classList.add("hidden");
+    createGroupForm.reset();
+    resetImageSelection();
+  });
+
+  // סגירה בלחיצה על רקע
+  createGroupModal.addEventListener("click", (e) => {
+    if (e.target === createGroupModal) {
+      createGroupModal.classList.add("hidden");
+      createGroupForm.reset();
+      resetImageSelection();
+    }
+  });
+
+  // בחירה ויזואלית של תמונה
+  document.querySelectorAll(".group-image-option").forEach(img => {
+    img.addEventListener("click", () => {
+      document.querySelectorAll(".group-image-option").forEach(i => i.classList.remove("selected"));
+      img.classList.add("selected");
+      document.getElementById("groupImageInput").value = img.dataset.value;
+    });
+  });
+
+  // שליחת הטופס
+  createGroupForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById("groupNameInput").value.trim();
+    const description = document.getElementById("groupDescriptionInput").value.trim();
+    const groupImage = document.getElementById("groupImageInput").value;
+
+    try {
+      const res = await fetch("http://localhost:5000/api/groups", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, description, groupImage, userId }),
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || "שגיאה ביצירת קבוצה");
+      }
+
+      const newGroup = await res.json();
+
+      createGroupModal.classList.add("hidden");
+      createGroupForm.reset();
+      resetImageSelection();
+      await loadGroups();
+    } catch (err) {
+      alert(`שגיאה: ${err.message}`);
+      console.error(err);
+    }
+  });
+
+  function resetImageSelection() {
+    document.querySelectorAll(".group-image-option").forEach(i => i.classList.remove("selected"));
+    const first = document.querySelector(".group-image-option[data-value='group1']");
+    if (first) first.classList.add("selected");
+    document.getElementById("groupImageInput").value = "group1";
   }
 
   addGroupBtn.addEventListener("click", () => {
@@ -47,7 +118,7 @@ function initSidebarLeft() {
         item.className = "list-group-item d-flex align-items-center justify-content-between";
         item.innerHTML = `
           <div class="d-flex align-items-center">
-            <img src="${group.image || '../images/groups/group1.png'}" class="avatar me-2" />
+            <img src="../images/groups/${group.groupImage || 'group1'}.png" class="avatar me-2" />
             <span>${group.name}</span>
           </div>
           <button class="btn btn-sm btn-success" data-id="${group._id}">הצטרף</button>
@@ -115,8 +186,8 @@ async function loadGroups() {
       groupInfo.style.cursor = "pointer";
 
       groupInfo.innerHTML = `
-      <img src="${`../images/groups/${group.groupImage}.png`}" class="avatar me-2" />
-      <span class="fw-bold">${group.name}</span>
+        <img src="../images/groups/${group.groupImage}.png" class="avatar me-2" />
+        <span class="fw-bold">${group.name}</span>
       `;
       groupInfo.addEventListener("click", () => {
         window.location.href = `/groups/${group._id}`;
@@ -148,7 +219,6 @@ async function loadGroups() {
 
       div.appendChild(groupInfo);
       div.appendChild(leaveBtn);
-
       container.appendChild(div);
     });
   } catch (err) {
