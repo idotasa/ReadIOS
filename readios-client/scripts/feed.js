@@ -36,6 +36,7 @@ async function initFeed() {
         </button>`
       : '';
 
+    const hasLiked = post.likes?.includes(userId);
     postCard.innerHTML = `
     <div class="post-header d-flex justify-content-between align-items-start">
       <div class="d-flex align-items-center">
@@ -56,10 +57,10 @@ async function initFeed() {
       </div>
 
       <div class="post-actions">
-        <button class="btn btn-outline-danger like-btn">
-          <i class="bi bi-heart"></i>
-          <span class="like-count">${post.likes?.length || 0}</span>
-        </button>
+      <button class="btn btn-outline-danger like-btn">
+        <i class="bi ${hasLiked ? 'bi-heart-fill' : 'bi-heart'}" style="color: ${hasLiked ? 'red' : 'gray'};"></i>
+        <span class="like-count">${post.likes?.length || 0}</span>
+      </button>
         <button class="comment-btn">💬 <span class="comment-count">${post.comments?.length || 0}</span></button>
       </div>
 
@@ -67,7 +68,10 @@ async function initFeed() {
         <div class="comments-list">
           ${
             post.comments?.map(comment => `
-              <div class="comment">${comment.content}</div>
+              <div class="comment">
+                <span class="comment-username" dir="rtl"><strong>${comment.userName}:</strong></span>
+                <span class="comment-content" dir="auto">${comment.content}</span>
+              </div>
             `).join('') || ''
           }
         </div>
