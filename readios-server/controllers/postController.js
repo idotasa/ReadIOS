@@ -16,7 +16,7 @@ exports.createPost = async (req, res) => {
       userId,
       groupId: groupId || undefined,      
       title,
-      content,
+      content: content || "",
       type,
       url
     });
@@ -24,6 +24,7 @@ exports.createPost = async (req, res) => {
     const saved = await post.save();
     res.status(201).json({ message: 'Post created', post: saved });
   } catch (err) {
+    console.error('❌ Error in createPost:', err);
     res.status(500).json({ message: 'Post creation failed', error: err.message });
   }
 };
@@ -45,10 +46,10 @@ exports.addComment = async (req, res) => {
       return res.status(400).json({ message: 'Missing userId or comment content' });
     }
 
-    await fetchUserById(userId);
+    const userName = (await fetchUserById(userId)).username;
     const post = await fetchPostById(req.params.id);
 
-    post.comments.push({ userId, content });
+    post.comments.push({ userId, userName, content });
     await post.save();
 
     res.json({ message: 'Comment added', comments: post.comments });
@@ -64,7 +65,10 @@ exports.toggleLike = async (req, res) => {
 
     const post = await fetchPostById(req.params.id);
 
-    const alreadyLiked = post.likes.includes(userId);
+    const likesAsStrings = post.likes.map(id => id.toString());
+
+    const alreadyLiked = likesAsStrings.includes(userId);
+
     if (alreadyLiked) {
       post.likes = post.likes.filter(id => id.toString() !== userId);
     } else {
