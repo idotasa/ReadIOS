@@ -34,7 +34,6 @@ async function initTopbar() {
       document.getElementById("modal-profile-image").src = `../images/users/${user.profileImage}.png`;
       document.getElementById("modal-profile-image").dataset.selectedImage = user.profileImage;
 
-      // ✨ חיבור מאזין לכפתור עריכת תמונה (פעם אחת בלבד)
       const editBtn = document.getElementById("editImageBtn");
       const picker = document.getElementById("imagePicker");
       const container = picker.querySelector("div");
@@ -69,7 +68,7 @@ async function initTopbar() {
           picker.dataset.loaded = "true";
         });
 
-        editBtn.dataset.connected = "true"; // סמן שמאזין כבר קיים
+        editBtn.dataset.connected = "true";
       }
     } catch (error) {
       console.error("שגיאה בטעינת נתוני המשתמש למודל:", error);
