@@ -32,6 +32,45 @@ async function initTopbar() {
       document.getElementById("modal-location").value = user.location;
       document.getElementById("modal-profileImage").value = user.profileImage;
       document.getElementById("modal-profile-image").src = `../images/users/${user.profileImage}.png`;
+      document.getElementById("modal-profile-image").dataset.selectedImage = user.profileImage;
+
+      // ✨ חיבור מאזין לכפתור עריכת תמונה (פעם אחת בלבד)
+      const editBtn = document.getElementById("editImageBtn");
+      const picker = document.getElementById("imagePicker");
+      const container = picker.querySelector("div");
+
+      if (!editBtn.dataset.connected) {
+        editBtn.addEventListener("click", () => {
+          picker.classList.toggle("d-none");
+
+          if (picker.dataset.loaded === "true") return;
+
+          for (let i = 1; i <= 10; i++) {
+            const img = document.createElement("img");
+            img.src = `../images/users/user${i}.png`;
+            img.alt = `user${i}`;
+            img.className = "selectable-img";
+            img.style = "width:48px; height:48px; border-radius:50%; cursor:pointer; border: 2px solid transparent;";
+
+            img.addEventListener("click", () => {
+              document.getElementById("modal-profile-image").src = img.src;
+              document.getElementById("modal-profile-image").dataset.selectedImage = `user${i}`;
+              document.getElementById("modal-profileImage").value = `user${i}`;
+
+              container.querySelectorAll("img").forEach(im => im.style.border = "2px solid transparent");
+              img.style.border = "2px solid #0d6efd";
+
+              picker.classList.add("d-none");
+            });
+
+            container.appendChild(img);
+          }
+
+          picker.dataset.loaded = "true";
+        });
+
+        editBtn.dataset.connected = "true"; // סמן שמאזין כבר קיים
+      }
     } catch (error) {
       console.error("שגיאה בטעינת נתוני המשתמש למודל:", error);
     }
@@ -40,7 +79,7 @@ async function initTopbar() {
   document.getElementById("saveProfileBtn").addEventListener("click", async () => {
     const email = document.getElementById("modal-email").value.trim();
     const location = document.getElementById("modal-location").value.trim();
-    const profileImage = document.getElementById("modal-profileImage").value.trim();
+    const profileImage = document.getElementById("modal-profile-image").dataset.selectedImage;
 
     try {
       const updateRes = await fetch(`http://localhost:5000/api/users/${userId}`, {

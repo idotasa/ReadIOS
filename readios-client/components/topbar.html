@@ -1,6 +1,5 @@
 <header class="top-bar">
   <div class="container-fluid d-flex align-items-center justify-content-between px-4">
-
     <div class="d-flex align-items-center me-auto" style="gap: 0.75rem;">
       <div class="logo-info">
         <img id="logo-img" src="./images/ReadIOS.jpg" alt="תמונת לוגו" class="logo-img" />
@@ -22,11 +21,10 @@
   </div>
 </header>
 
-<!-- Modal Bootstrap -->
+<!-- MODAL -->
 <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-sm">
     <div class="modal-content">
-
       <div class="modal-header">
         <h5 class="modal-title" id="profileModalLabel">פרופיל משתמש</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="סגור"></button>
@@ -34,9 +32,15 @@
 
       <div class="modal-body">
         <form id="userProfileForm">
-
-          <div class="text-center mb-3">
+          <div class="text-center mb-3 position-relative">
             <img id="modal-profile-image" class="avatar" src="" alt="תמונת פרופיל" style="width: 64px; height: 64px;" />
+            <button type="button" id="editImageBtn" class="btn btn-sm btn-outline-secondary position-absolute top-0 end-0" style="transform: translate(25%, -25%);" title="ערוך תמונה">
+              <i class="bi bi-pencil"></i>
+            </button>
+          </div>
+
+          <div id="imagePicker" class="d-none mb-2" data-loaded="false">
+            <div class="d-flex flex-wrap justify-content-center gap-2"></div>
           </div>
 
           <div class="mb-2">
@@ -54,11 +58,7 @@
             <input type="text" class="form-control" id="modal-location">
           </div>
 
-          <div class="mb-2">
-            <label class="form-label">תמונה</label>
-            <input type="text" class="form-control" id="modal-profileImage" placeholder="image1, image2...">
-          </div>
-
+          <input type="hidden" id="modal-profileImage">
         </form>
 
         <div class="d-flex justify-content-between mt-3">
@@ -70,14 +70,12 @@
             <i class="bi bi-box-arrow-right"></i> התנתקות
           </button>
         </div>
-
       </div>
 
       <div class="modal-footer pt-2">
         <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">סגור</button>
         <button type="button" class="btn btn-primary btn-sm" id="saveProfileBtn">שמור שינויים</button>
       </div>
-
     </div>
   </div>
 </div>
