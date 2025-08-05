@@ -47,9 +47,10 @@ exports.addComment = async (req, res) => {
     }
 
     await fetchUserById(userId);
+    const userName = (await fetchUserById(userId)).username;
     const post = await fetchPostById(req.params.id);
 
-    post.comments.push({ userId, content });
+    post.comments.push({ userId, userName, content });
     await post.save();
 
     res.json({ message: 'Comment added', comments: post.comments });
