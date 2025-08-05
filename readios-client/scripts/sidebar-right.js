@@ -52,9 +52,7 @@ function initSidebarRight() {
           "list-group-item d-flex align-items-center justify-content-between";
         item.innerHTML = `
           <div class="d-flex align-items-center">
-            <img src="${
-              user.profileImage || "./images/default.jpg"
-            }" class="avatar me-2" />
+          <img src="${`../images/users/${user.profileImage}.png`}" class="avatar me-2" />
             <span>${user.username}</span>
           </div>
           <button class="btn btn-sm btn-success add-btn" data-id="${user._id}">הוסף</button>
