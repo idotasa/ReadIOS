@@ -36,4 +36,6 @@ app.get('/login', (req, res) => {
 
 app.use(express.static(path.join(__dirname, './readios-client')));
 
-
+app.get('/groups/:groupId', (req, res) => {
+  res.sendFile(path.join(__dirname, '../readios-client/components/group-page.html'));
+});
