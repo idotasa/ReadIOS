@@ -1,4 +1,5 @@
-function initFeed() {
+async function initFeed() {
+
 
     fetch('components/create-post.html')
     .then(res => res.text())

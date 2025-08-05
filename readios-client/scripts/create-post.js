@@ -1,4 +1,4 @@
-function initCreatePost() {
+async function initCreatePost() {
   const fakeInput = document.getElementById('fakeInput');
   const postModal = document.getElementById('postModal');
   const modalContent = document.querySelector('.modal-content');
@@ -11,7 +11,6 @@ function initCreatePost() {
   const mediaOptions = document.getElementById('mediaOptions');
   const postUrlInput = document.getElementById('postUrl');
 
-  
 
   const images = [
     'images/books/book1.jpg',
@@ -95,6 +94,27 @@ function initCreatePost() {
       mediaOptions.appendChild(el);
     });
   }
+  
+  const userId = localStorage.getItem("userId");
+  
+  const res = await fetch(`http://localhost:5000/api/users/${userId}`);
+  const user = await res.json();
+  window.loggedInUser = user;
+  const postArea = document.getElementById("create-post-area");
+  if (postArea) {
+    postArea.innerHTML = `
+      <img src="./images/users/${user.profileImage}.png" class="avatar me-2" alt="תמונת פרופיל של ${user.username}" />
+      <div id="fakeInput" class="create-post-trigger">${user.username}, מה בא לך לשתף?</div>
+    `;
+
+  document.getElementById('fakeInput').addEventListener('click', () => {
+    const postModal = document.getElementById('postModal');
+    if (postModal) {
+      postModal.classList.remove('hidden');
+     }
+    });
+    }
+
 
   postForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -137,6 +157,7 @@ function initCreatePost() {
         closeModal();
 
         if (typeof window.addPostToFeed === 'function') {
+            data.post.userId = window.loggedInUser;
             window.addPostToFeed(data.post, true);
         }
 
