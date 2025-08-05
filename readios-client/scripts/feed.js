@@ -49,6 +49,7 @@ async function initFeed() {
     </div>
 
       <div class="post-body">
+        ${post.groupId ? `<div class="post-group small text-muted">${post.groupId.name}</div>` : ''}
         <h3 class="post-title">${post.title}</h3>
         <p class="post-content">${post.content}</p>
         ${mediaHTML}
