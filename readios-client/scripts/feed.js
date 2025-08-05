@@ -12,7 +12,7 @@ function initFeed() {
     loadPostsFromServer();
 
     window.addPostToFeed = function(post, prepend = false) {
-    const userId = localStorage.getItem("userId"); // להחליף ברגע שמחברים את הlogin
+    const userId = localStorage.getItem("userId");
     const feedArea = document.querySelector('.feed-area');
 
     const postCard = document.createElement('div');
@@ -33,7 +33,7 @@ function initFeed() {
       <div class="post-header">
         <img src="${userImage}" class="avatar me-2" alt="User avatar" />
         <div class="post-meta">
-          <strong class="username">${post.user?.name || 'משתמש אנונימי'}</strong>
+          <strong class="username">${post.userId?.username}</strong>
           <div class="time">${createdAt}</div>
         </div>
       </div>
@@ -152,6 +152,8 @@ function initFeed() {
     } else {
       feedArea.appendChild(postCard);
     }
+
+    
   }
 }
 
