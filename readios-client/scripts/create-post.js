@@ -27,8 +27,8 @@ function initCreatePost() {
   ];
 
   const videos = [
-    '/assets/vid1.mp4',
-    '/assets/vid2.mp4'
+    '/images/videos/video1.mp4',
+    '/images/videos/video2.mp4'
   ];
 
   fakeInput.addEventListener('click', () => {

@@ -9,6 +9,8 @@ function initFeed() {
       document.body.appendChild(script);
     });
 
+    loadPostsFromServer();
+
     window.addPostToFeed = function(post) {
     const userId = localStorage.getItem("userId"); // להחליף ברגע שמחברים את הlogin
     const feedArea = document.querySelector('.feed-area');
@@ -123,5 +125,22 @@ function initFeed() {
     });
 
     feedArea.prepend(postCard);
+  }
+}
+
+async function loadPostsFromServer() {
+  try {
+    const userId = localStorage.getItem("userId"); // loginלשנות ברגע שמחברים את ה
+    const res = await fetch(`/api/posts/feed/${userId}`);
+    if (!res.ok) throw new Error('שגיאה בשליפת הפיד');
+
+    const data = await res.json();
+    const posts = data.posts || [];
+
+    posts.forEach(post => {
+      window.addPostToFeed(post);
+    });
+  } catch (err) {
+    console.error('שגיאה בטעינת פוסטים:', err.message);
   }
 }
