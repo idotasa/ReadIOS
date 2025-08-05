@@ -11,7 +11,7 @@ function initFeed() {
 
     loadPostsFromServer();
 
-    window.addPostToFeed = function(post) {
+    window.addPostToFeed = function(post, prepend = false) {
     const userId = localStorage.getItem("userId"); // להחליף ברגע שמחברים את הlogin
     const feedArea = document.querySelector('.feed-area');
 
@@ -45,7 +45,10 @@ function initFeed() {
       </div>
 
       <div class="post-actions">
-        <button class="like-btn">❤️ <span class="comment-count">${post.likes?.length || 0}</span></button>
+        <button class="btn btn-outline-danger like-btn">
+          <i class="bi bi-heart"></i>
+          <span class="like-count">${post.likes?.length || 0}</span>
+        </button>
         <button class="comment-btn">💬 <span class="comment-count">${post.comments?.length || 0}</span></button>
       </div>
 
@@ -75,17 +78,33 @@ function initFeed() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId })
        });
+
+       const data = await res.json();
        if (!res.ok) {
-          const error = await res.json();
-          console.error('שגיאה בלייק:', error.message);
+          console.error('שגיאה בלייק:', data.message);
           return;
         }
-        const updated = await res.json();
-        postCard.querySelector('.like-btn').innerHTML = `❤️ ${updated.likes.length}`;
-      } catch (err) {
-        console.error("שגיאה בלייק:", err);
-      }
-    });
+
+        const likeBtn = postCard.querySelector('.like-btn');
+        const icon = likeBtn.querySelector('i');
+        const countSpan = likeBtn.querySelector('.like-count');
+
+        countSpan.textContent = data.likes.length;
+
+         if (data.message === 'Liked') {
+          icon.classList.remove('bi-heart');
+          icon.classList.add('bi-heart-fill');
+          icon.style.color = 'red';
+        } else {
+          icon.classList.remove('bi-heart-fill');
+          icon.classList.add('bi-heart');
+          icon.style.color = 'gray';
+        }
+
+        } catch (err) {
+          console.error("שגיאה בלייק:", err);
+        }
+      });
 
     postCard.querySelector('.send-comment-btn').addEventListener('click', async () => {
       const input = postCard.querySelector('.comment-input');
@@ -102,10 +121,11 @@ function initFeed() {
         });
         const newComment = await res.json();
         if (!res.ok) throw new Error(newComment.message || 'Failed to comment');
+        const lastComment = newComment.comments[newComment.comments.length - 1];
 
         const commentDiv = document.createElement('div');
         commentDiv.classList.add('comment');
-        commentDiv.textContent = content;
+        commentDiv.innerHTML = `<strong>${lastComment.userName}:</strong> ${lastComment.content}`;
         postCard.querySelector('.comments-list').appendChild(commentDiv);
         input.value = '';
         const commentCountSpan = postCard.querySelector('.comment-count');
@@ -124,7 +144,11 @@ function initFeed() {
       container.classList.add('hidden');
     });
 
-    feedArea.prepend(postCard);
+    if (prepend) {
+      feedArea.prepend(postCard);
+    } else {
+      feedArea.appendChild(postCard);
+    }
   }
 }
 
@@ -136,9 +160,9 @@ async function loadPostsFromServer() {
 
     const data = await res.json();
     const posts = data.posts || [];
-
+    posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     posts.forEach(post => {
-      window.addPostToFeed(post);
+      window.addPostToFeed(post, false);
     });
   } catch (err) {
     console.error('שגיאה בטעינת פוסטים:', err.message);

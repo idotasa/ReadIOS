@@ -46,7 +46,6 @@ exports.addComment = async (req, res) => {
       return res.status(400).json({ message: 'Missing userId or comment content' });
     }
 
-    // await fetchUserById(userId);
     const userName = (await fetchUserById(userId)).username;
     const post = await fetchPostById(req.params.id);
 
@@ -66,7 +65,10 @@ exports.toggleLike = async (req, res) => {
 
     const post = await fetchPostById(req.params.id);
 
-    const alreadyLiked = post.likes.includes(userId);
+    const likesAsStrings = post.likes.map(id => id.toString());
+
+    const alreadyLiked = likesAsStrings.includes(userId);
+
     if (alreadyLiked) {
       post.likes = post.likes.filter(id => id.toString() !== userId);
     } else {

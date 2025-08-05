@@ -102,7 +102,6 @@
   margin-bottom: 0.5rem;
 }
 
-.like-count,
 .comment-count {
   font-weight: bold;
   margin: 0 0.25rem;
@@ -117,7 +116,6 @@
 }
 
 .btn-action,
-.like-btn,
 .comment-btn,
 .post-actions button {
   background: none;
@@ -128,6 +126,22 @@
   border-radius: 0.25rem;
   transition: background-color 0.2s ease;
 }
+
+.like-btn .like-count {
+  color: black !important;
+  margin-right: 5px;
+}
+
+@keyframes pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+
+.heart-pop {
+  animation: pop 0.3s ease;
+}
+
 
 .btn-action:hover,
 .like-btn:hover,
