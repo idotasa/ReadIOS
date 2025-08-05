@@ -1,7 +1,7 @@
 async function initTopbar() {
   const userId = localStorage.getItem("userId");
   if (!userId) {
-    window.location.href = "/login.html";
+    window.location.href = "/login";
     return;
   }
 
@@ -15,7 +15,7 @@ async function initTopbar() {
     document.getElementById("profile-img").alt = `${user.username} profile image`;
   } catch (err) {
     console.error("Error on TopBar", err);
-    window.location.href = "/login.html";
+    window.location.href = "/login";
     return;
   }
 
@@ -106,7 +106,7 @@ async function initTopbar() {
 
   document.getElementById("logoutBtn")?.addEventListener("click", () => {
     localStorage.clear();
-    window.location.href = "/login.html";
+    window.location.href = "/login";
   });
 
   document.getElementById("deleteUserBtn")?.addEventListener("click", async () => {
@@ -124,7 +124,7 @@ async function initTopbar() {
       }
 
       localStorage.clear();
-      window.location.href = "/login.html";
+      window.location.href = "/login";
     } catch (err) {
       alert("שגיאה במחיקת המשתמש: " + err.message);
       console.error(err);
