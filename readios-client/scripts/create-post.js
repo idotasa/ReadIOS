@@ -32,6 +32,7 @@ async function initCreatePost() {
 
   fakeInput.addEventListener('click', () => {
     postModal.classList.remove('hidden');
+    postForm.reset(); 
     updateFormFields(); 
   });
 
@@ -111,6 +112,8 @@ async function initCreatePost() {
     const postModal = document.getElementById('postModal');
     if (postModal) {
       postModal.classList.remove('hidden');
+      postForm.reset();
+      updateFormFields();
      }
     });
     }
