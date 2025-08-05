@@ -120,7 +120,7 @@ async function loadFriends() {
 
       div.innerHTML = `
         <div class="d-flex align-items-center">
-          <img src="${friend.profileImage || "./images/default.jpg"}" class="avatar me-2" alt="${friend.username}" />
+          <img src="../images/users/${friend.profileImage}.png" class="avatar me-2" alt="${friend.username}" />
           <div class="friend-info fw-bold">${friend.username}</div>
         </div>
         <button class="btn p-0 text-danger ms-2 delete-btn" data-id="${friend._id}" title="הסר חבר">
