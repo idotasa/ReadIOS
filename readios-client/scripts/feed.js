@@ -29,14 +29,24 @@ function initFeed() {
       mediaHTML += `<video src="${post.url}" controls class="post-media"></video>`;
     }
 
+    const isOwner = userId === post.userId?._id;
+    const deleteBtnHTML = isOwner
+      ? `<button class="btn btn-light btn-sm rounded-circle border-0 delete-post-btn" title="מחק פוסט">
+          <i class="bi bi-x-lg text-danger fs-5"></i>
+        </button>`
+      : '';
+
     postCard.innerHTML = `
-      <div class="post-header">
+    <div class="post-header d-flex justify-content-between align-items-start">
+      <div class="d-flex align-items-center">
         <img src="${userImage}" class="avatar me-2" alt="User avatar" />
         <div class="post-meta">
           <strong class="username">${post.userId?.username}</strong>
           <div class="time">${createdAt}</div>
         </div>
       </div>
+      ${deleteBtnHTML}
+    </div>
 
       <div class="post-body">
         <h3 class="post-title">${post.title}</h3>
@@ -70,6 +80,32 @@ function initFeed() {
       const container = postCard.querySelector('.comments-container');
       container.classList.toggle('hidden');
     });
+
+  if (isOwner) {
+  const deleteBtn = postCard.querySelector('.delete-post-btn');
+  deleteBtn.addEventListener('click', async () => {
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/posts/${post._id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ userId })
+      });
+
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.message || "שגיאה במחיקה");
+
+      postCard.remove();
+
+    } catch (err) {
+      console.error("שגיאה במחיקת פוסט:", err.message);
+      alert("אירעה שגיאה במחיקת הפוסט.");
+    }
+  });
+}
+
 
     postCard.querySelector('.like-btn').addEventListener('click', async () => {
       try {
@@ -152,14 +188,12 @@ function initFeed() {
     } else {
       feedArea.appendChild(postCard);
     }
-
-    
   }
 }
 
 async function loadPostsFromServer() {
   try {
-    const userId = localStorage.getItem("userId"); // loginלשנות ברגע שמחברים את ה
+    const userId = localStorage.getItem("userId");
     const res = await fetch(`/api/posts/feed/${userId}`);
     if (!res.ok) throw new Error('שגיאה בשליפת הפיד');
 
