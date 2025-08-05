@@ -18,7 +18,6 @@ function initFeed() {
     const postCard = document.createElement('div');
     postCard.classList.add('post-card');
 
-    const userImage = post.user?.avatarUrl || '/default-avatar.png';
     const createdAt = new Date(post.createdAt).toLocaleString();
     const type = post.type || '';
 
@@ -39,7 +38,7 @@ function initFeed() {
     postCard.innerHTML = `
     <div class="post-header d-flex justify-content-between align-items-start">
       <div class="d-flex align-items-center">
-        <img src="${userImage}" class="avatar me-2" alt="User avatar" />
+        <img src="../images/users/${post.userId.profileImage}.png" class="avatar me-2" alt="User avatar" />
         <div class="post-meta">
           <strong class="username">${post.userId?.username}</strong>
           <div class="time">${createdAt}</div>
