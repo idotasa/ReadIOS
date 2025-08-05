@@ -41,7 +41,7 @@ function initCreatePost() {
   });
 
   postModal.addEventListener('click', (e) => {
-    if (!modalContent.contains(e.target)) {
+    if (e.target === postModal) {
       closeModal();
     }
   });
