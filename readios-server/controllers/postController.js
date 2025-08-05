@@ -46,7 +46,7 @@ exports.addComment = async (req, res) => {
       return res.status(400).json({ message: 'Missing userId or comment content' });
     }
 
-    await fetchUserById(userId);
+    // await fetchUserById(userId);
     const userName = (await fetchUserById(userId)).username;
     const post = await fetchPostById(req.params.id);
 
