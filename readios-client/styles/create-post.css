@@ -126,7 +126,6 @@ textarea {
   border-color: #1877f2;
 }
 
-/* אנימציה */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -136,4 +135,9 @@ textarea {
     opacity: 1;
     transform: scale(1);
   }
+}
+
+.modal-content {
+  max-height: 90vh;
+  overflow-y: auto;
 }

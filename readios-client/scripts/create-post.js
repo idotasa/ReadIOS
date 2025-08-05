@@ -14,16 +14,16 @@ function initCreatePost() {
   
 
   const images = [
-    'images/books/book1.png',
-    'images/books/book2.png',
-    'images/books/book3.png',
-    'images/books/book4.png',
-    //'images/books/book5.png',
-    'images/books/book6.png',
-    'images/books/book7.png',
-    'images/books/book8.png',
-    'images/books/book9.png',
-    //'images/books/book10.png'
+    'images/books/book1.jpg',
+    'images/books/book2.jpg',
+    'images/books/book3.jpg',
+    'images/books/book4.jpg',
+    'images/books/book5.jpg',
+    'images/books/book6.jpg',
+    'images/books/book7.jpg',
+    'images/books/book8.jpg',
+    'images/books/book9.jpg',
+    'images/books/book10.jpg'
   ];
 
   const videos = [
@@ -115,7 +115,6 @@ function initCreatePost() {
         alert("יש לבחור מדיה.");
         return;
     }
-
     
     try {
         const res = await fetch('http://localhost:5000/api/posts', {
@@ -139,10 +138,6 @@ function initCreatePost() {
 
         if (typeof window.addPostToFeed === 'function') {
             window.addPostToFeed(data.post, true);
-        }
-
-        if (typeof renderPost === 'function') {
-            renderPost(data.post); 
         }
 
         } catch (err) {
