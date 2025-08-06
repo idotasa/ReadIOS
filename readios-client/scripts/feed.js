@@ -12,7 +12,9 @@ async function initFeed() {
 
     loadPostsFromServer();
 
-    window.addPostToFeed = function(post, prepend = false) {
+}
+
+window.addPostToFeed = function(post, prepend = false) {
     const userId = localStorage.getItem("userId");
     const feedArea = document.querySelector('.feed-area');
 
@@ -194,7 +196,6 @@ async function initFeed() {
       feedArea.appendChild(postCard);
     }
   }
-}
 
 async function loadPostsFromServer() {
   try {
