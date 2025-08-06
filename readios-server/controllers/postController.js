@@ -1,5 +1,7 @@
 const Post = require('../models/Post');
 const User = require('../models/User');
+const Group = require('../models/Group');
+
 const { fetchUserById, fetchPostById } = require('../utils');
 
 exports.createPost = async (req, res) => {
@@ -156,3 +158,26 @@ exports.getFeedForUser = async (req, res) => {
     res.status(500).json({ error: 'Failed to load feed', details: err.message });
   }
 };
+
+
+exports.getFeedForGroup = async (req, res) => {
+  try {
+    const groupId = req.params.groupId;
+
+    const group = await Group.findById(groupId).lean();
+    if (!group) return res.status(404).json({ error: 'Group not found' });
+
+    const groupPosts = await Post.find({ groupId: groupId })
+      .populate('userId', 'username profileImage')
+      .populate('groupId', 'name image')
+      .sort({ createdAt: -1 })
+      .lean();
+
+    res.json({ posts: groupPosts });
+
+  } catch (err) {
+    console.error('❌ Failed to load group feed:', err.message);
+    res.status(500).json({ error: 'Failed to load group feed', details: err.message });
+  }
+};
+

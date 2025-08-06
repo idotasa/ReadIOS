@@ -236,3 +236,7 @@
   background-color: #145dbf;
 }
 
+.hidden {
+  display: none !important;
+}
+
