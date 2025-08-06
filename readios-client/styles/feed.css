@@ -217,7 +217,7 @@
   bottom: 20px;
   right: 20px;
   z-index: 1000;
-  background-color: #1877f2; /* כחול פייסבוק */
+  background-color: #1877f2; 
   color: white;
   border: none;
   border-radius: 50%;
@@ -226,7 +226,7 @@
   font-size: 24px;
   cursor: pointer;
   box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-  display: none; /* יסתיר עד שגלילת דף תגיע */
+  display: none;
   align-items: center;
   justify-content: center;
   transition: background-color 0.3s ease;

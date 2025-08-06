@@ -217,7 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const btn = document.getElementById('scrollToTopBtn');
 
   window.addEventListener('scroll', () => {
-    if (window.scrollY > 300) {
+    if (window.scrollY > 800) {
       btn.style.display = 'flex';
     } else {
       btn.style.display = 'none';
