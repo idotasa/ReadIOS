@@ -190,64 +190,57 @@ try {
     });
 
     let actionBtn;
-      const pageId = '743738418818975';
-      const accessToken = 'EAAKSqr1wd4ABPAXZBMZCcnMraP9KmxT0x7a8SG2LkEyNF44pKgvf2mKxRPRiPHBPhw0DbPUPc2zVptcqOWG4nKlCRC0947JEychDKUmEZBUWCbU0TfBZAZCBha7XqOtUbVFyclZAwWumS8cbZANGAHaeCU8u9QX46hXWtME7qoZAUgpFU1DMPgIZBezVcn57epJKdggDEevEbY0PWc5WaCJdqzkUKrSLsfrjAdPJKyZCuJIHUZD'; // Page Access Token המלא שקיבלת
+    
+  if (group.isAdmin) {
+    actionBtn = document.createElement("button");
+    actionBtn.className = "btn p-0 ms-2 text-primary";
+    actionBtn.innerHTML = '<i class="bi bi-megaphone-fill fs-6"></i>';
+    actionBtn.title = "שתף סיכום יומי לפייסבוק";
 
-    if (group.isAdmin) {
-      actionBtn = document.createElement("button");
-      actionBtn.className = "btn p-0 ms-2 text-primary";
-      actionBtn.innerHTML = '<i class="bi bi-megaphone-fill fs-6"></i>';
-      actionBtn.title = "שתף סיכום יומי לפייסבוק";
+    actionBtn.addEventListener("click", async (e) => {
+        e.stopPropagation();
 
-      actionBtn.addEventListener("click", async (e) => {
-  e.stopPropagation();
+        try {
+          const summaryRes = await fetch(`http://localhost:5000/api/groups/today/${group._id}`);
+          const posts = await summaryRes.json();
 
-  try {
-    const summaryRes = await fetch(`http://localhost:5000/api/groups/today/${group._id}`);
-    const posts = await summaryRes.json();
+          if (!Array.isArray(posts) || posts.length === 0) {
+              alert("לא נמצאו פוסטים לשיתוף היום");
+              return;
+          }
 
-    if (!Array.isArray(posts) || posts.length === 0) {
-      alert("לא נמצאו פוסטים לשיתוף היום");
-      return;
-    }
+          const groupDescription = posts[0]?.description || "";
+          let message = `📝 סיכום יומי של הקבוצה "${group.name}"\n\n`;
+          message += `📃 תיאור הקבוצה: ${groupDescription}\n\n`;
+          message += `📌 פוסטים שנכתבו היום:\n`;
 
-    const groupDescription = posts[0]?.description || "";
-    let message = `📝 סיכום יומי של הקבוצה "${group.name}"\n\n`;
-    message += `📃 תיאור הקבוצה: ${groupDescription}\n\n`;
-    message += `📌 פוסטים שנכתבו היום:\n`;
+          posts.forEach((post, index) => {
+              message += `\n${index + 1}. ${post.userName} - ${post.title}`;
+          });
 
-    posts.forEach((post, index) => {
-      message += `\n${index + 1}.${post.userName} - ${post.title}`;
+          const shareRes = await fetch(`http://localhost:5000/api/groups/${group._id}/share-to-facebook`, {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ message: message }),
+          });
+
+          const shareData = await shareRes.json();
+
+          if (shareRes.ok) {
+              const toastEl = document.getElementById('facebookToast');
+              const toast = new bootstrap.Toast(toastEl, { delay: 4000 });
+              toast.show();
+          } else {
+              alert('שגיאה בפרסום לפייסבוק: ' + (shareData.error || 'שגיאה לא ידועה'));
+          }
+        } catch (err) {
+            alert('שגיאה כללית: ' + err.message);
+            console.error("שגיאה כללית בפרונטאנד:", err);
+        }
     });
-
-    const params = new URLSearchParams();
-    params.append('message', message);
-    params.append('access_token', accessToken);
-
-    const fbRes = await fetch(`https://graph.facebook.com/${pageId}/feed`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: params.toString(),
-    });
-
-    const fbData = await fbRes.json();
-
-    if (fbRes.ok) {
-      const toastEl = document.getElementById('facebookToast');
-      const toast = new bootstrap.Toast(toastEl, { delay: 4000 });
-      toast.show();
-
-    } else {
-      alert('שגיאה בפרסום לפייסבוק: ' + (fbData.error.message || 'שגיאה לא ידועה'));
-    }
-  } catch (err) {
-    alert('שגיאה כללית: ' + err.message);
-  }
-});
-
-    } else {
+  } else {
       actionBtn = document.createElement("button");
       actionBtn.className = "btn p-0 ms-2 text-danger";
       actionBtn.innerHTML = '<i class="bi bi-door-open-fill fs-5"></i>';

@@ -1,6 +1,7 @@
 const Group = require('../models/Group');
 const User = require('../models/User');
 const Post = require('../models/Post');
+const fetch = require('node-fetch')
 
 const createGroup = async (req, res) => {
   try {
@@ -185,46 +186,82 @@ const deleteGroup = async (req, res) => {
   }
 };
 
-
 const getTodaysGroupPostsSummary = async (req, res) => {
-  const groupId = req.params.groupId;
-  if (!groupId) return res.status(400).json({ error: "groupId is required" });
+    const groupId = req.params.groupId;
+    if (!groupId) return res.status(400).json({ error: "groupId is required" });
 
-  const startOfDay = new Date();
-  startOfDay.setHours(0, 0, 0, 0);
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
 
-  const endOfDay = new Date();
-  endOfDay.setHours(23, 59, 59, 999);
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
 
-  try {
-    const group = await Group.findById(groupId).select('description');
-    if (!group) return res.status(404).json({ error: "Group not found" });
+    try {
+        const group = await Group.findById(groupId).select('description');
+        if (!group) return res.status(404).json({ error: "Group not found" });
 
-    const posts = await Post.find({
-      groupId,
-      createdAt: {
-        $gte: startOfDay,
-        $lte: endOfDay
-      }
-    })
-      .select('_id title type userId')
-      .populate('userId', 'username');
+        const posts = await Post.find({
+            groupId,
+            createdAt: {
+                $gte: startOfDay,
+                $lte: endOfDay
+            }
+        })
+        .select('_id title type userId')
+        .populate('userId', 'username');
 
-    const result = posts.map(post => ({
-      _id: post._id,
-      title: post.title,
-      type: post.type,
-      userName: post.userId.username,
-      description: group.description
-    }));
+        const result = posts.map(post => ({
+            _id: post._id,
+            title: post.title,
+            type: post.type,
+            userName: post.userId.username,
+            description: group.description
+        }));
 
-    return res.json(result); 
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: "Server error" });
-  }
+        return res.json(result);
+    } catch (err) {
+        console.error("Error in getTodaysGroupPostsSummary:", err);
+        return res.status(500).json({ error: "Server error fetching daily summary" });
+    }
 };
 
+
+const shareDailySummaryToFacebook = async (req, res) => {
+    const { message } = req.body;
+    try {
+        const params = new URLSearchParams();
+        params.append('message', message);
+        params.append('access_token', process.env.FACEBOOK_PAGE_ACCESS_TOKEN);
+
+        const fbRes = await fetch(`https://graph.facebook.com/${process.env.FACEBOOK_PAGE_ID}/feed`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: params.toString(),
+        });
+
+        const fbData = await fbRes.json();
+
+        if (fbRes.ok) {
+            console.log("Successfully posted to Facebook:", fbData);
+            return res.status(200).json({ success: true, postId: fbData.id });
+        } else {
+            console.error("Error posting to Facebook. Full response from Facebook:", fbData);
+            return res.status(fbRes.status || 500).json({
+                error: errorMessage,
+                facebookErrorDetails: fbData.error || fbData
+            });
+        }
+    } catch (err) {
+        console.error("Critical server error during Facebook share:", err);
+        return res.status(500).json({
+            error: "שגיאה פנימית בשרת בעת פרסום לפייסבוק",
+            details: err.message,
+            name: err.name
+        });
+    }
+  }
 
 module.exports = {
   createGroup,
@@ -234,5 +271,6 @@ module.exports = {
   updateGroup,
   removeMember,
   deleteGroup,
-  getTodaysGroupPostsSummary
+  getTodaysGroupPostsSummary,
+  shareDailySummaryToFacebook
 };
