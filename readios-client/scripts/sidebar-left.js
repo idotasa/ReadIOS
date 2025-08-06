@@ -11,19 +11,16 @@ function initSidebarLeft() {
   const cancelCreateGroupBtn = document.getElementById("cancelCreateGroupBtn");
   const createGroupForm = document.getElementById("createGroupForm");
 
-  // פתיחת המודל
   openModalBtn.addEventListener("click", () => {
     createGroupModal.classList.remove("hidden");
   });
 
-  // סגירת המודל
   cancelCreateGroupBtn.addEventListener("click", () => {
     createGroupModal.classList.add("hidden");
     createGroupForm.reset();
     resetImageSelection();
   });
 
-  // סגירה בלחיצה על רקע
   createGroupModal.addEventListener("click", (e) => {
     if (e.target === createGroupModal) {
       createGroupModal.classList.add("hidden");
@@ -32,7 +29,6 @@ function initSidebarLeft() {
     }
   });
 
-  // בחירה ויזואלית של תמונה
   document.querySelectorAll(".group-image-option").forEach(img => {
     img.addEventListener("click", () => {
       document.querySelectorAll(".group-image-option").forEach(i => i.classList.remove("selected"));
@@ -41,7 +37,6 @@ function initSidebarLeft() {
     });
   });
 
-  // שליחת הטופס
   createGroupForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -195,6 +190,8 @@ try {
     });
 
     let actionBtn;
+      const pageId = '743738418818975';
+      const accessToken = 'EAAKSqr1wd4ABPAXZBMZCcnMraP9KmxT0x7a8SG2LkEyNF44pKgvf2mKxRPRiPHBPhw0DbPUPc2zVptcqOWG4nKlCRC0947JEychDKUmEZBUWCbU0TfBZAZCBha7XqOtUbVFyclZAwWumS8cbZANGAHaeCU8u9QX46hXWtME7qoZAUgpFU1DMPgIZBezVcn57epJKdggDEevEbY0PWc5WaCJdqzkUKrSLsfrjAdPJKyZCuJIHUZD'; // Page Access Token המלא שקיבלת
 
     if (group.isAdmin) {
       actionBtn = document.createElement("button");
@@ -203,10 +200,53 @@ try {
       actionBtn.title = "שתף סיכום יומי לפייסבוק";
 
       actionBtn.addEventListener("click", async (e) => {
-        e.stopPropagation();
-        alert(`שיתוף סיכום לקבוצה: ${group.name}`);
-        // כאן תוכל לקרוא לשרת שלך כדי לשלוח את הסיכום לפייסבוק
-      });
+  e.stopPropagation();
+
+  try {
+    const summaryRes = await fetch(`http://localhost:5000/api/groups/today/${group._id}`);
+    const posts = await summaryRes.json();
+
+    if (!Array.isArray(posts) || posts.length === 0) {
+      alert("לא נמצאו פוסטים לשיתוף היום");
+      return;
+    }
+
+    const groupDescription = posts[0]?.description || "";
+    let message = `📝 סיכום יומי של הקבוצה "${group.name}"\n\n`;
+    message += `📃 תיאור הקבוצה: ${groupDescription}\n\n`;
+    message += `📌 פוסטים שנכתבו היום:\n`;
+
+    posts.forEach((post, index) => {
+      message += `\n${index + 1}.${post.userName} - ${post.title}`;
+    });
+
+    const params = new URLSearchParams();
+    params.append('message', message);
+    params.append('access_token', accessToken);
+
+    const fbRes = await fetch(`https://graph.facebook.com/${pageId}/feed`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: params.toString(),
+    });
+
+    const fbData = await fbRes.json();
+
+    if (fbRes.ok) {
+      const toastEl = document.getElementById('facebookToast');
+      const toast = new bootstrap.Toast(toastEl, { delay: 4000 });
+      toast.show();
+
+    } else {
+      alert('שגיאה בפרסום לפייסבוק: ' + (fbData.error.message || 'שגיאה לא ידועה'));
+    }
+  } catch (err) {
+    alert('שגיאה כללית: ' + err.message);
+  }
+});
+
     } else {
       actionBtn = document.createElement("button");
       actionBtn.className = "btn p-0 ms-2 text-danger";

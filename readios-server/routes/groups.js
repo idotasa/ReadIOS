@@ -7,7 +7,8 @@ const {
   searchGroups,
   updateGroup,
   removeMember,
-  deleteGroup
+  deleteGroup,
+  getTodaysGroupPostsSummary,
 } = require('../controllers/groupController');
 
 router.post('/', createGroup); // Create a new group
@@ -17,6 +18,7 @@ router.get('/', searchGroups); // Search groups by name
 router.put('/:id', updateGroup); // Update group (owner only)
 router.delete('/:id/members/:memberId', removeMember); // Remove member (owner only)
 router.delete('/:id', deleteGroup);
+router.get('/today/:groupId', getTodaysGroupPostsSummary);
 
 module.exports = router;
 

@@ -1,5 +1,6 @@
 const Group = require('../models/Group');
 const User = require('../models/User');
+const Post = require('../models/Post');
 
 const createGroup = async (req, res) => {
   try {
@@ -185,6 +186,45 @@ const deleteGroup = async (req, res) => {
 };
 
 
+const getTodaysGroupPostsSummary = async (req, res) => {
+  const groupId = req.params.groupId;
+  if (!groupId) return res.status(400).json({ error: "groupId is required" });
+
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+
+  const endOfDay = new Date();
+  endOfDay.setHours(23, 59, 59, 999);
+
+  try {
+    const group = await Group.findById(groupId).select('description');
+    if (!group) return res.status(404).json({ error: "Group not found" });
+
+    const posts = await Post.find({
+      groupId,
+      createdAt: {
+        $gte: startOfDay,
+        $lte: endOfDay
+      }
+    })
+      .select('_id title type userId')
+      .populate('userId', 'username');
+
+    const result = posts.map(post => ({
+      _id: post._id,
+      title: post.title,
+      type: post.type,
+      userName: post.userId.username,
+      description: group.description
+    }));
+
+    return res.json(result); 
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Server error" });
+  }
+};
+
 
 module.exports = {
   createGroup,
@@ -193,5 +233,6 @@ module.exports = {
   searchGroups,
   updateGroup,
   removeMember,
-  deleteGroup
+  deleteGroup,
+  getTodaysGroupPostsSummary
 };
