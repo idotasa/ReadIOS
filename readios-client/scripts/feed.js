@@ -1,4 +1,5 @@
-function initFeed() {
+async function initFeed() {
+
 
     fetch('components/create-post.html')
     .then(res => res.text())
@@ -11,14 +12,15 @@ function initFeed() {
 
     loadPostsFromServer();
 
-    window.addPostToFeed = function(post, prepend = false) {
+}
+
+window.addPostToFeed = function(post, prepend = false) {
     const userId = localStorage.getItem("userId");
     const feedArea = document.querySelector('.feed-area');
 
     const postCard = document.createElement('div');
     postCard.classList.add('post-card');
 
-    const userImage = post.user?.avatarUrl || '/default-avatar.png';
     const createdAt = new Date(post.createdAt).toLocaleString();
     const type = post.type || '';
 
@@ -36,10 +38,11 @@ function initFeed() {
         </button>`
       : '';
 
+    const hasLiked = post.likes?.includes(userId);
     postCard.innerHTML = `
     <div class="post-header d-flex justify-content-between align-items-start">
       <div class="d-flex align-items-center">
-        <img src="${userImage}" class="avatar me-2" alt="User avatar" />
+        <img src="../images/users/${post.userId.profileImage}.png" class="avatar me-2" alt="User avatar" />
         <div class="post-meta">
           <strong class="username">${post.userId?.username}</strong>
           <div class="time">${createdAt}</div>
@@ -49,16 +52,17 @@ function initFeed() {
     </div>
 
       <div class="post-body">
+        ${post.groupId ? `<div class="post-group small text-muted">${post.groupId.name}</div>` : ''}
         <h3 class="post-title">${post.title}</h3>
         <p class="post-content">${post.content}</p>
         ${mediaHTML}
       </div>
 
       <div class="post-actions">
-        <button class="btn btn-outline-danger like-btn">
-          <i class="bi bi-heart"></i>
-          <span class="like-count">${post.likes?.length || 0}</span>
-        </button>
+      <button class="btn btn-outline-danger like-btn">
+        <i class="bi ${hasLiked ? 'bi-heart-fill' : 'bi-heart'}" style="color: ${hasLiked ? 'red' : 'gray'};"></i>
+        <span class="like-count">${post.likes?.length || 0}</span>
+      </button>
         <button class="comment-btn">💬 <span class="comment-count">${post.comments?.length || 0}</span></button>
       </div>
 
@@ -66,7 +70,10 @@ function initFeed() {
         <div class="comments-list">
           ${
             post.comments?.map(comment => `
-              <div class="comment">${comment.content}</div>
+              <div class="comment">
+                <span class="comment-username" dir="rtl"><strong>${comment.userName}:</strong></span>
+                <span class="comment-content" dir="auto">${comment.content}</span>
+              </div>
             `).join('') || ''
           }
         </div>
@@ -189,7 +196,6 @@ function initFeed() {
       feedArea.appendChild(postCard);
     }
   }
-}
 
 async function loadPostsFromServer() {
   try {
@@ -207,3 +213,19 @@ async function loadPostsFromServer() {
     console.error('שגיאה בטעינת פוסטים:', err.message);
   }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('scrollToTopBtn');
+
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 800) {
+      btn.style.display = 'flex';
+    } else {
+      btn.style.display = 'none';
+    }
+  });
+
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});

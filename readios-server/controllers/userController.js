@@ -201,14 +201,20 @@ exports.getUserGroupPreviews = async (req, res) => {
     const userId = req.params.id;
 
     const groups = await Group.find({ 'members.user': userId })
-      .select('name _id')
+      .select('name _id groupImage members')
       .lean();
 
-    const groupPreviews = groups.map(group => ({
-      _id: group._id,
-      name: group.name,
-      image: group.image || null
-    }));
+    const groupPreviews = groups.map(group => {
+      const member = group.members.find(m => m.user.toString() === userId);
+      const isAdmin = member?.isAdmin || false;
+
+      return {
+        _id: group._id,
+        name: group.name,
+        groupImage: group.groupImage || null,
+        isAdmin
+      };
+    });
 
     res.json({ groups: groupPreviews });
   } catch (err) {

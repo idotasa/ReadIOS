@@ -1,5 +1,12 @@
 <header class="top-bar">
   <div class="container-fluid d-flex align-items-center justify-content-between px-4">
+
+    <div class="d-flex align-items-center me-auto" style="gap: 0.75rem;">
+      <div class="logo-info">
+        <img id="logo-img" src="../images/ReadIOS.jpg" alt="תמונת לוגו" class="logo-img" />
+      </div>
+      <div class="logo fw-bold fs-2 me-auto">ReadIOS</div>
+    </div>
     <!-- כפתור חיפוש ממורכז -->
     <div class="flex-grow-1 d-flex justify-content-center">
       <button class="btn btn-outline-primary btn-sm w-100" 
@@ -8,14 +15,13 @@
               data-bs-target="#searchModal">
         🔍 חיפוש מתקדם
       </button>
-    </div>
 
     <!-- פרטי משתמש -->
     <div class="d-flex align-items-center user-box ms-auto" style="gap: 0.75rem;">
       <div class="user-info text-end">
         <div id="current-user">...</div>
       </div>
-      <img id="profile-img" src="./images/default.png" alt="תמונת פרופיל" class="avatar"
+      <img id="profile-img" src="" alt="תמונת פרופיל" class="avatar"
         data-bs-toggle="modal" data-bs-target="#profileModal" style="cursor: pointer;" />
     </div>
   </div>

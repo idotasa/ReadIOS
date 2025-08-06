@@ -52,9 +52,7 @@ function initSidebarRight() {
           "list-group-item d-flex align-items-center justify-content-between";
         item.innerHTML = `
           <div class="d-flex align-items-center">
-            <img src="${
-              user.profileImage || "./images/default.jpg"
-            }" class="avatar me-2" />
+          <img src="${`../images/users/${user.profileImage}.png`}" class="avatar me-2" />
             <span>${user.username}</span>
           </div>
           <button class="btn btn-sm btn-success add-btn" data-id="${user._id}">הוסף</button>
@@ -90,6 +88,55 @@ function initSidebarRight() {
   });
 
   loadFriends();
+
+  // Google Books API
+  const bookInput = document.getElementById("bookSearchInput");
+  const bookResults = document.getElementById("bookSearchResults");
+
+  let currentRequestId = 0;
+
+  bookInput.addEventListener("input", async () => {
+    const query = bookInput.value.trim();
+    bookResults.innerHTML = "";
+
+    if (!query) return;
+
+    const thisRequestId = ++currentRequestId;
+
+    try {
+      const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=intitle:${encodeURIComponent(query)}&maxResults=10`);
+      const data = await res.json();
+
+      if (thisRequestId !== currentRequestId) return;
+
+      if (!data.items || data.items.length === 0) {
+        bookResults.innerHTML = "<div class='text-muted small'>לא נמצאו ספרים</div>";
+        return;
+      }
+
+      data.items.slice(0, 10).forEach(book => {
+        const info = book.volumeInfo;
+        const item = document.createElement("div");
+        item.className = "list-group-item";
+
+        item.innerHTML = `
+          <div class="d-flex">
+            <img src="${info.imageLinks?.thumbnail || ''}" class="book-thumb me-2" />
+            <div>
+              <div><strong>${info.title}</strong></div>
+              <div class="small">${info.authors?.join(", ") || "לא ידוע"}</div>
+              <div class="small text-muted">${info.publishedDate || ""}</div>
+            </div>
+          </div>
+        `;
+        bookResults.appendChild(item);
+      });
+
+    } catch (err) {
+      console.error("Book API error:", err);
+      bookResults.innerHTML = "<div class='text-danger small'>שגיאה בחיפוש</div>";
+    }
+  });
 }
 
 async function loadFriends() {
@@ -120,7 +167,7 @@ async function loadFriends() {
 
       div.innerHTML = `
         <div class="d-flex align-items-center">
-          <img src="${friend.profileImage || "./images/default.jpg"}" class="avatar me-2" alt="${friend.username}" />
+          <img src="../images/users/${friend.profileImage}.png" class="avatar me-2" alt="${friend.username}" />
           <div class="friend-info fw-bold">${friend.username}</div>
         </div>
         <button class="btn p-0 text-danger ms-2 delete-btn" data-id="${friend._id}" title="הסר חבר">

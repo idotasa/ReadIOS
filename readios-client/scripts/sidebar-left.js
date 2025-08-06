@@ -6,9 +6,75 @@ function initSidebarLeft() {
   const groupSearchInput = document.getElementById("groupSearchInput");
   const groupResultsContainer = document.getElementById("groupSearchResults");
 
-  if (!addGroupBtn || !groupSearchSection || !groupSearchInput || !groupResultsContainer) {
-    console.error("Sidebar Left elements not found");
-    return;
+  const openModalBtn = document.getElementById("openCreateGroupModal");
+  const createGroupModal = document.getElementById("createGroupModal");
+  const cancelCreateGroupBtn = document.getElementById("cancelCreateGroupBtn");
+  const createGroupForm = document.getElementById("createGroupForm");
+
+  openModalBtn.addEventListener("click", () => {
+    createGroupModal.classList.remove("hidden");
+  });
+
+  cancelCreateGroupBtn.addEventListener("click", () => {
+    createGroupModal.classList.add("hidden");
+    createGroupForm.reset();
+    resetImageSelection();
+  });
+
+  createGroupModal.addEventListener("click", (e) => {
+    if (e.target === createGroupModal) {
+      createGroupModal.classList.add("hidden");
+      createGroupForm.reset();
+      resetImageSelection();
+    }
+  });
+
+  document.querySelectorAll(".group-image-option").forEach(img => {
+    img.addEventListener("click", () => {
+      document.querySelectorAll(".group-image-option").forEach(i => i.classList.remove("selected"));
+      img.classList.add("selected");
+      document.getElementById("groupImageInput").value = img.dataset.value;
+    });
+  });
+
+  createGroupForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById("groupNameInput").value.trim();
+    const description = document.getElementById("groupDescriptionInput").value.trim();
+    const groupImage = document.getElementById("groupImageInput").value;
+
+    try {
+      const res = await fetch("http://localhost:5000/api/groups", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, description, groupImage, userId }),
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || "שגיאה ביצירת קבוצה");
+      }
+
+      const newGroup = await res.json();
+
+      createGroupModal.classList.add("hidden");
+      createGroupForm.reset();
+      resetImageSelection();
+      await loadGroups();
+    } catch (err) {
+      alert(`שגיאה: ${err.message}`);
+      console.error(err);
+    }
+  });
+
+  function resetImageSelection() {
+    document.querySelectorAll(".group-image-option").forEach(i => i.classList.remove("selected"));
+    const first = document.querySelector(".group-image-option[data-value='group1']");
+    if (first) first.classList.add("selected");
+    document.getElementById("groupImageInput").value = "group1";
   }
 
   addGroupBtn.addEventListener("click", () => {
@@ -47,7 +113,7 @@ function initSidebarLeft() {
         item.className = "list-group-item d-flex align-items-center justify-content-between";
         item.innerHTML = `
           <div class="d-flex align-items-center">
-            <img src="${group.image || './images/default-group.png'}" class="avatar me-2" />
+            <img src="../images/groups/${group.groupImage || 'group1'}.png" class="avatar me-2" />
             <span>${group.name}</span>
           </div>
           <button class="btn btn-sm btn-success" data-id="${group._id}">הצטרף</button>
@@ -94,39 +160,93 @@ async function loadGroups() {
     return;
   }
 
-  try {
-    const res = await fetch(`http://localhost:5000/api/users/${userId}/groupPreviews`);
-    const data = await res.json();
+try {
+  const res = await fetch(`http://localhost:5000/api/users/${userId}/groupPreviews`);
+  const data = await res.json();
 
-    container.innerHTML = "";
+  container.innerHTML = "";
 
-    if (!data.groups || data.groups.length === 0) {
-      container.innerHTML = '<p class="text-muted">אין קבוצות להצגה.</p>';
-      return;
-    }
+  if (!data.groups || data.groups.length === 0) {
+    container.innerHTML = '<p class="text-muted">אין קבוצות להצגה.</p>';
+    return;
+  }
 
-    data.groups.forEach(group => {
-      const div = document.createElement("div");
-      div.className = "group-item d-flex align-items-center mb-2 justify-content-between";
-      div.dataset.id = group._id;
+  data.groups.forEach(group => {
+    const div = document.createElement("div");
+    div.className = "group-item d-flex align-items-center mb-2 justify-content-between";
+    div.dataset.id = group._id;
 
-      const groupInfo = document.createElement("div");
-      groupInfo.className = "d-flex align-items-center group-click";
-      groupInfo.style.cursor = "pointer";
-      groupInfo.innerHTML = `
-        <img src="${group.image || './images/default-group.png'}" class="me-2" />
-        <span class="fw-bold">${group.name}</span>
-      `;
-      groupInfo.addEventListener("click", () => {
-        window.location.href = `/groups/${group._id}`;
-      });
+    const groupInfo = document.createElement("div");
+    groupInfo.className = "d-flex align-items-center group-click";
+    groupInfo.style.cursor = "pointer";
 
-      const leaveBtn = document.createElement("button");
-      leaveBtn.className = "btn p-0 ms-2 text-danger";
-      leaveBtn.innerHTML = '<i class="bi bi-door-open-fill fs-5"></i>';
-      leaveBtn.title = "עזוב קבוצה";
+    groupInfo.innerHTML = `
+      <img src="../images/groups/${group.groupImage}.png" class="avatar me-2" />
+      <span class="fw-bold">${group.name}</span>
+    `;
 
-      leaveBtn.addEventListener("click", async (e) => {
+    groupInfo.addEventListener("click", () => {
+      window.location.href = `/groups/${group._id}`;
+    });
+
+    let actionBtn;
+    
+  if (group.isAdmin) {
+    actionBtn = document.createElement("button");
+    actionBtn.className = "btn p-0 ms-2 text-primary";
+    actionBtn.innerHTML = '<i class="bi bi-megaphone-fill fs-6"></i>';
+    actionBtn.title = "שתף סיכום יומי לפייסבוק";
+
+    actionBtn.addEventListener("click", async (e) => {
+        e.stopPropagation();
+
+        try {
+          const summaryRes = await fetch(`http://localhost:5000/api/groups/today/${group._id}`);
+          const posts = await summaryRes.json();
+
+          if (!Array.isArray(posts) || posts.length === 0) {
+              alert("לא נמצאו פוסטים לשיתוף היום");
+              return;
+          }
+
+          const groupDescription = posts[0]?.description || "";
+          let message = `📝 סיכום יומי של הקבוצה "${group.name}"\n\n`;
+          message += `📃 תיאור הקבוצה: ${groupDescription}\n\n`;
+          message += `📌 פוסטים שנכתבו היום:\n`;
+
+          posts.forEach((post, index) => {
+              message += `\n${index + 1}. ${post.userName} - ${post.title}`;
+          });
+
+          const shareRes = await fetch(`http://localhost:5000/api/groups/${group._id}/share-to-facebook`, {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ message: message }),
+          });
+
+          const shareData = await shareRes.json();
+
+          if (shareRes.ok) {
+              const toastEl = document.getElementById('facebookToast');
+              const toast = new bootstrap.Toast(toastEl, { delay: 4000 });
+              toast.show();
+          } else {
+              alert('שגיאה בפרסום לפייסבוק: ' + (shareData.error || 'שגיאה לא ידועה'));
+          }
+        } catch (err) {
+            alert('שגיאה כללית: ' + err.message);
+            console.error("שגיאה כללית בפרונטאנד:", err);
+        }
+    });
+  } else {
+      actionBtn = document.createElement("button");
+      actionBtn.className = "btn p-0 ms-2 text-danger";
+      actionBtn.innerHTML = '<i class="bi bi-door-open-fill fs-5"></i>';
+      actionBtn.title = "עזוב קבוצה";
+
+      actionBtn.addEventListener("click", async (e) => {
         e.stopPropagation();
 
         try {
@@ -144,13 +264,14 @@ async function loadGroups() {
           console.error("Error leaving group:", err);
         }
       });
+    }
 
-      div.appendChild(groupInfo);
-      div.appendChild(leaveBtn);
+    div.appendChild(groupInfo);
+    div.appendChild(actionBtn);
+    container.appendChild(div);
+  });
+} catch (err) {
+  console.error("Failed to load groups", err);
+}
 
-      container.appendChild(div);
-    });
-  } catch (err) {
-    console.error("Failed to load groups", err);
-  }
 }

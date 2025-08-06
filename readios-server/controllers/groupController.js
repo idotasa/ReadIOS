@@ -1,17 +1,17 @@
 const Group = require('../models/Group');
 const User = require('../models/User');
-const jwt = require('jsonwebtoken');
+const Post = require('../models/Post');
+const fetch = require('node-fetch')
 
 const createGroup = async (req, res) => {
   try {
-    const { name, description } = req.body;
-
-    const userId = decoded.id;
+    const { userId, name, description, groupImage } = req.body;
 
     const group = new Group({
       name,
       description,
       owner: userId,
+      groupImage,
       members: [{ user: userId, isAdmin: true }]
     });
 
@@ -122,38 +122,38 @@ const updateGroup = async (req, res) => {
 };
 
 
-const removeMember = async (req, res) => {
-  try {
-    const groupId = req.params.id;
-    const memberId = req.params.memberId;
+  const removeMember = async (req, res) => {
+    try {
+      const groupId = req.params.id;
+      const memberId = req.params.memberId;
 
-    const group = await Group.findById(groupId);
-    if (!group) {
-      return res.status(404).json({ error: 'Group not found' });
+      const group = await Group.findById(groupId);
+      if (!group) {
+        return res.status(404).json({ error: 'Group not found' });
+      }
+
+      if (group.owner.toString() === memberId) {
+        return res.status(403).json({ error: 'Cannot remove the group owner' });
+      }
+
+      group.members = group.members.filter(m => m.user);
+
+      const isMember = group.members.some(m => m.user?.toString() === memberId);
+      if (!isMember) {
+        return res.status(400).json({ error: 'User is not a member of the group' });
+      }
+
+      group.members = group.members.filter(m => m.user?.toString() !== memberId);
+      await group.save();
+
+      await User.findByIdAndUpdate(memberId, { $pull: { groups: groupId } });
+
+      res.status(200).json({ message: 'Member removed successfully', group });
+    } catch (err) {
+      console.error('❌ Failed to remove member:', err.message);
+      res.status(500).json({ error: 'Failed to remove member', details: err.message });
     }
-
-    if (group.owner.toString() === memberId) {
-      return res.status(403).json({ error: 'Cannot remove the group owner' });
-    }
-
-    group.members = group.members.filter(m => m.user);
-
-    const isMember = group.members.some(m => m.user?.toString() === memberId);
-    if (!isMember) {
-      return res.status(400).json({ error: 'User is not a member of the group' });
-    }
-
-    group.members = group.members.filter(m => m.user?.toString() !== memberId);
-    await group.save();
-
-    await User.findByIdAndUpdate(memberId, { $pull: { groups: groupId } });
-
-    res.status(200).json({ message: 'Member removed successfully', group });
-  } catch (err) {
-    console.error('❌ Failed to remove member:', err.message);
-    res.status(500).json({ error: 'Failed to remove member', details: err.message });
-  }
-};
+  };
 
 
 const deleteGroup = async (req, res) => {
@@ -205,7 +205,82 @@ const searchGroupsWithPostsToday = async (req, res) => {
   }
 };
 
+const getTodaysGroupPostsSummary = async (req, res) => {
+    const groupId = req.params.groupId;
+    if (!groupId) return res.status(400).json({ error: "groupId is required" });
 
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    try {
+        const group = await Group.findById(groupId).select('description');
+        if (!group) return res.status(404).json({ error: "Group not found" });
+
+        const posts = await Post.find({
+            groupId,
+            createdAt: {
+                $gte: startOfDay,
+                $lte: endOfDay
+            }
+        })
+        .select('_id title type userId')
+        .populate('userId', 'username');
+
+        const result = posts.map(post => ({
+            _id: post._id,
+            title: post.title,
+            type: post.type,
+            userName: post.userId.username,
+            description: group.description
+        }));
+
+        return res.json(result);
+    } catch (err) {
+        console.error("Error in getTodaysGroupPostsSummary:", err);
+        return res.status(500).json({ error: "Server error fetching daily summary" });
+    }
+};
+
+
+const shareDailySummaryToFacebook = async (req, res) => {
+    const { message } = req.body;
+    try {
+        const params = new URLSearchParams();
+        params.append('message', message);
+        params.append('access_token', process.env.FACEBOOK_PAGE_ACCESS_TOKEN);
+
+        const fbRes = await fetch(`https://graph.facebook.com/${process.env.FACEBOOK_PAGE_ID}/feed`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: params.toString(),
+        });
+
+        const fbData = await fbRes.json();
+
+        if (fbRes.ok) {
+            console.log("Successfully posted to Facebook:", fbData);
+            return res.status(200).json({ success: true, postId: fbData.id });
+        } else {
+            console.error("Error posting to Facebook. Full response from Facebook:", fbData);
+            return res.status(fbRes.status || 500).json({
+                error: errorMessage,
+                facebookErrorDetails: fbData.error || fbData
+            });
+        }
+    } catch (err) {
+        console.error("Critical server error during Facebook share:", err);
+        return res.status(500).json({
+            error: "שגיאה פנימית בשרת בעת פרסום לפייסבוק",
+            details: err.message,
+            name: err.name
+        });
+    }
+  }
 
 module.exports = {
   createGroup,
@@ -216,4 +291,7 @@ module.exports = {
   removeMember,
   deleteGroup,
   searchGroupsWithPostsToday
+  getTodaysGroupPostsSummary,
+  shareDailySummaryToFacebook
+
 };

@@ -53,3 +53,21 @@
   align-items: center;
   justify-content: space-between;
 }
+
+.books .book-thumb {
+  width: 40px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+#bookSearchResults .list-group-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-bottom: 5px;
+}

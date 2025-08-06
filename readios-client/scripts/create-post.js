@@ -1,4 +1,4 @@
-function initCreatePost() {
+async function initCreatePost() {
   const fakeInput = document.getElementById('fakeInput');
   const postModal = document.getElementById('postModal');
   const modalContent = document.querySelector('.modal-content');
@@ -11,19 +11,18 @@ function initCreatePost() {
   const mediaOptions = document.getElementById('mediaOptions');
   const postUrlInput = document.getElementById('postUrl');
 
-  
 
   const images = [
-    'images/books/book1.png',
-    'images/books/book2.png',
-    'images/books/book3.png',
-    'images/books/book4.png',
-    //'images/books/book5.png',
-    'images/books/book6.png',
-    'images/books/book7.png',
-    'images/books/book8.png',
-    'images/books/book9.png',
-    //'images/books/book10.png'
+    'images/books/book1.jpg',
+    'images/books/book2.jpg',
+    'images/books/book3.jpg',
+    'images/books/book4.jpg',
+    'images/books/book5.jpg',
+    'images/books/book6.jpg',
+    'images/books/book7.jpg',
+    'images/books/book8.jpg',
+    'images/books/book9.jpg',
+    'images/books/book10.jpg'
   ];
 
   const videos = [
@@ -33,6 +32,7 @@ function initCreatePost() {
 
   fakeInput.addEventListener('click', () => {
     postModal.classList.remove('hidden');
+    postForm.reset(); 
     updateFormFields(); 
   });
 
@@ -95,6 +95,53 @@ function initCreatePost() {
       mediaOptions.appendChild(el);
     });
   }
+  
+  const userId = localStorage.getItem("userId");
+
+  let groupData = []; 
+  const groupSelect = document.getElementById('postGroup');
+  if (groupSelect) {
+    try {
+      const groupRes = await fetch(`http://localhost:5000/api/users/${userId}/groupPreviews`);
+      const groupResJson = await groupRes.json();
+
+      if (groupRes.ok && Array.isArray(groupResJson.groups)) {
+        groupData = groupResJson.groups;
+        groupData.forEach(group => {
+          const option = document.createElement('option');
+          option.value = group._id;
+          option.textContent = group.name;
+          groupSelect.appendChild(option);
+        });
+      } else {
+        console.warn("לא נמצאו קבוצות או שגיאה בתשובה");
+      }
+    } catch (err) {
+      console.error("שגיאה בטעינת הקבוצות:", err);
+    }
+  }
+
+  
+  const res = await fetch(`http://localhost:5000/api/users/${userId}`);
+  const user = await res.json();
+  window.loggedInUser = user;
+  const postArea = document.getElementById("create-post-area");
+  if (postArea) {
+    postArea.innerHTML = `
+      <img src="./images/users/${user.profileImage}.png" class="avatar me-2" alt="תמונת פרופיל של ${user.username}" />
+      <div id="fakeInput" class="create-post-trigger">${user.username}, מה בא לך לשתף?</div>
+    `;
+
+  document.getElementById('fakeInput').addEventListener('click', () => {
+    const postModal = document.getElementById('postModal');
+    if (postModal) {
+      postModal.classList.remove('hidden');
+      postForm.reset();
+      updateFormFields();
+     }
+    });
+    }
+
 
   postForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -104,7 +151,7 @@ function initCreatePost() {
     const type = postType.value;
     const url = postUrlInput.value;
     const userId = localStorage.getItem("userId");
-    const groupId = null;
+    const groupId = document.getElementById('postGroup')?.value || null;
 
     if (!title || (type.includes('text') && !content)) {
         alert("נא למלא כותרת ותוכן (אם נדרש).");
@@ -115,7 +162,6 @@ function initCreatePost() {
         alert("יש לבחור מדיה.");
         return;
     }
-
     
     try {
         const res = await fetch('http://localhost:5000/api/posts', {
@@ -138,11 +184,9 @@ function initCreatePost() {
         closeModal();
 
         if (typeof window.addPostToFeed === 'function') {
+            data.post.userId = window.loggedInUser;
+            data.post.groupId = groupData.find(g => g._id === groupId);
             window.addPostToFeed(data.post, true);
-        }
-
-        if (typeof renderPost === 'function') {
-            renderPost(data.post); 
         }
 
         } catch (err) {

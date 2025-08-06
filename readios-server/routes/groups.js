@@ -9,6 +9,8 @@ const {
   removeMember,
   deleteGroup,
   searchGroupsWithPostsToday
+  getTodaysGroupPostsSummary,
+  shareDailySummaryToFacebook
 } = require('../controllers/groupController');
 
 router.get('/searchWithPostsToday', searchGroupsWithPostsToday);
@@ -20,5 +22,7 @@ router.post('/', createGroup);
 router.put('/:id', updateGroup);
 router.delete('/:id/members/:memberId', removeMember);
 router.delete('/:id', deleteGroup);
+router.get('/today/:groupId', getTodaysGroupPostsSummary);
+router.post('/:groupId/share-to-facebook', shareDailySummaryToFacebook);
 
 module.exports = router;

@@ -25,15 +25,16 @@ app.get('/', (req, res) => {
 app.use('/api/users', userRoutes);
 app.use('/api/posts', postRoutes);
 
-const PORT = process.env.PORT;
-app.listen(PORT, () => console.log(`✅ Server on port ${PORT}`));
-
 app.use('/api/groups', groupRoutes);
 
 app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, '../readios-client/components/login-register.html'));
 });
 
-app.use(express.static(path.join(__dirname, './readios-client')));
 
+app.get('/groups/:groupId', (req, res) => {
+  res.sendFile(path.join(__dirname, '../readios-client/components/group-page.html'));
+});
 
+const PORT = process.env.PORT;
+app.listen(PORT, () => console.log(`✅ Server on port ${PORT}`));
