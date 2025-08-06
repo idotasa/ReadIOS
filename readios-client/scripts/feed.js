@@ -1,6 +1,5 @@
 async function initFeed() {
 
-
     fetch('components/create-post.html')
     .then(res => res.text())
     .then(html => {
@@ -11,7 +10,6 @@ async function initFeed() {
     });
 
     loadPostsFromServer();
-
 }
 
 window.addPostToFeed = function(post, prepend = false) {
@@ -26,7 +24,7 @@ window.addPostToFeed = function(post, prepend = false) {
 
     let mediaHTML = '';
     if (type.includes('image')) {
-      mediaHTML += `<img src="${post.url}" class="post-media" />`;
+      mediaHTML += `<img src="/${post.url}" class="post-media" />`;
     } else if (type.includes('video')) {
       mediaHTML += `<video src="${post.url}" controls class="post-media"></video>`;
     }
@@ -42,7 +40,7 @@ window.addPostToFeed = function(post, prepend = false) {
     postCard.innerHTML = `
     <div class="post-header d-flex justify-content-between align-items-start">
       <div class="d-flex align-items-center">
-        <img src="../images/users/${post.userId.profileImage}.png" class="avatar me-2" alt="User avatar" />
+        <img src="/images/users/${post.userId.profileImage}.png" class="avatar me-2" alt="User avatar" />
         <div class="post-meta">
           <strong class="username">${post.userId?.username}</strong>
           <div class="time">${createdAt}</div>
