@@ -3,6 +3,9 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const path = require('path');
+const userRoutes = require('./routes/users');
+const groupRoutes = require('./routes/groups');
+const postRoutes = require('./routes/posts')
 
 dotenv.config();
 const app = express();
@@ -19,5 +22,19 @@ app.get('/', (req, res) => {
   res.send('🚀 Server is running!');
 });
 
-const PORT = process.env.PORT || 5000;
+app.use('/api/users', userRoutes);
+app.use('/api/posts', postRoutes);
+
+app.use('/api/groups', groupRoutes);
+
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, '../readios-client/components/login-register.html'));
+});
+
+
+app.get('/groups/:groupId', (req, res) => {
+  res.sendFile(path.join(__dirname, '../readios-client/components/group-page.html'));
+});
+
+const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`✅ Server on port ${PORT}`));

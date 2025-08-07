@@ -1,0 +1,212 @@
+/* login-register.css */
+
+html, body {
+  height: 100%;
+  overflow: visible;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f0f2f5;
+  margin: 0;
+  padding: 0;
+}
+
+.login-container {
+  max-width: 420px;      
+  margin: 50px auto;   
+  background: white;
+  padding: 20px 15px;    
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.login-form,
+.register-form {
+  text-align: right;
+  direction: rtl;
+  display: block;
+}
+
+h2 {
+    text-align: center;
+  direction: rtl;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+button {
+  background-color: #1877f2;
+  color: white;
+  padding: 12px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background-color: #165ecb;
+}
+
+.register-link {
+  margin-top: 15px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.register-link a {
+  color: #1877f2;
+  text-decoration: none;
+}
+
+.register-link a:hover {
+  text-decoration: underline;
+}
+
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.toggle-password {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.popup-content {
+  background-color: #fff;
+  padding: 20px 25px;
+  border: 1px solid #888;
+  border-radius: 10px;
+  max-width: 500px;
+  width: 95%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  margin: auto;
+}
+
+.popup {
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.popup h2 {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 18px;
+  font-size: 24px;
+  color: #888;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: #000;
+}
+
+#profilePreview {
+  max-width: 120px;
+  border-radius: 50%;
+  display: block;
+  margin: 16px auto;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+select,
+label {
+  margin-bottom: 10px;
+}
+
+.register-form label {
+  font-weight: 500;
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+.register-form select,
+.register-form input {
+  font-size: 14px;
+  padding: 8px;
+  margin-bottom: 10px;
+}
+
+.image-preview-container {
+  text-align: center;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+select {
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.register-form button,
+.login-form button {
+  text-align: center;
+  margin: 15px auto 0;
+  display: block;
+  font-size: 14px;
+  padding: 10px 16px
+}
+
+.logo {
+  max-width: 80px;
+  display: block;
+  margin: 0 auto 10px auto;
+}
+
+.welcome-title {
+  text-align: center;
+  direction: rtl;
+  margin-bottom: 10px;
+}
+
+.spacer {
+  height: 10px;
+}

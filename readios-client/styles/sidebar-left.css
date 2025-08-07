@@ -1,0 +1,95 @@
+.sidebar-left {
+  background-color: #f1f3f5;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.groups h6 {
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
+.group-item {
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s;
+  cursor: pointer;
+}
+
+.group-item:hover {
+  background-color: #f8f9fa;
+}
+
+.group-item img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-left: 0.5rem;
+}
+
+.group-info {
+  font-weight: 500;
+}
+
+#groupSearchSection {
+  margin-bottom: 1rem;
+}
+
+#groupSearchResults .list-group-item {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+#groupSearchResults .list-group-item:hover {
+  background-color: #f1f1f1;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  max-width: 400px;
+  width: 100%;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.form-buttons {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.group-image-option {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  object-fit: cover;
+  transition: border 0.2s ease;
+}
+
+.group-image-option.selected {
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+}

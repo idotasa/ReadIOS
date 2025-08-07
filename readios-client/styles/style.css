@@ -1,0 +1,45 @@
+@import url('./topbar.css');
+@import url('./feed.css');
+
+body {
+  margin: 0;
+  font-family: "Helvetica Neue", sans-serif;
+  background-color: #f5f6f7;
+  color: #000;
+}
+
+#scrollToTopBtn {
+  display: none;
+  position: fixed;
+  bottom: 1rem;
+  left: 1rem;
+  z-index: 1000;
+}
+
+#empty-feed-message {
+  display: none;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+#share-popup {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.5);
+}
+
+.modal-dialog {
+  max-width: 400px;
+  margin: 100px auto;
+}
+
+.modal-content {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 1rem;
+}

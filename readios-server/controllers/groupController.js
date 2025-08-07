@@ -1,0 +1,386 @@
+const Group = require('../models/Group');
+const User = require('../models/User');
+const Post = require('../models/Post');
+const fetch = require('node-fetch')
+const dotenv = require('dotenv');
+
+dotenv.config();
+
+const createGroup = async (req, res) => {
+  try {
+    const { userId, name, description, groupImage } = req.body;
+
+    const group = new Group({
+      name,
+      description,
+      owner: userId,
+      groupImage,
+      members: [{ user: userId, isAdmin: true }]
+    });
+
+    await group.save();
+    res.status(201).json(group);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to create group' });
+  }
+};
+
+const getGroupById = async (req, res) => {
+  try {
+    const group = await Group.findById(req.params.id).populate('members.user', 'username');
+    if (!group) return res.status(404).json({ error: 'Group not found' });
+
+    const membersWithDetails = group.members
+      .filter(m => m.user && m.user.username)
+      .map(m => ({
+        _id: m.user._id,
+        username: m.user.username,
+        isAdmin: m.isAdmin
+      }));
+
+    res.json({
+      _id: group._id,
+      name: group.name,
+      description: group.description,
+      owner: group.owner,
+      createdAt: group.createdAt,
+      members: membersWithDetails
+    });
+  } catch (err) {
+    console.error('❌ Error in getGroupById:', err.message);
+    res.status(500).json({ error: 'Failed to fetch group', details: err.message });
+  }
+};
+
+
+const addGroupMember = async (req, res) => {
+  try {
+    const groupId = req.params.groupId;
+    const userId = req.params.userId;
+
+    const group = await Group.findById(groupId);
+    if (!group) return res.status(404).json({ error: 'Group not found' });
+
+    group.members = group.members.filter(m => m.user);
+
+    const alreadyInGroup = group.members.some(m => m.user?.toString() === userId);
+    if (alreadyInGroup) {
+      return res.status(400).json({ error: 'User is already in the group' });
+    }
+
+    group.members.push({ user: userId, isAdmin: false });
+    await group.save();
+
+    await User.findByIdAndUpdate(userId, { $addToSet: { groups: group._id } });
+
+    res.status(200).json({ message: 'User added to group', group });
+  } catch (err) {
+    console.error('❌ Failed to add member:', err.message);
+    res.status(500).json({ error: 'Failed to add member', details: err.message });
+  }
+};
+
+const searchGroups = async (req, res) => {
+  try {
+    const search = typeof req.query.search === 'string' ? req.query.search.trim() : null;
+
+    const query = search
+      ? { name: { $regex: search, $options: 'i' } }
+      : {};
+
+    const groups = await Group.find(query);
+    res.json(groups);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to search groups', details: err.message });
+  }
+};
+
+
+const updateGroup = async (req, res) => {
+  try {
+    const userId = decoded.id;
+
+    const group = await Group.findById(req.params.id);
+    if (!group) return res.status(404).json({ error: 'Group not found' });
+
+    if (group.owner.toString() !== userId) {
+      return res.status(403).json({ error: 'Only the group owner can update the group' });
+    }
+
+    const { name, description } = req.body;
+    if (name) group.name = name;
+    if (description) group.description = description;
+
+    await group.save();
+    res.json(group);
+  } catch (err) {
+    console.error('❌ Error updating group:', err.message); 
+    res.status(500).json({ error: 'Failed to update group', details: err.message });
+  }
+};
+
+
+  const removeMember = async (req, res) => {
+    try {
+      const groupId = req.params.id;
+      const memberId = req.params.memberId;
+
+      const group = await Group.findById(groupId);
+      if (!group) {
+        return res.status(404).json({ error: 'Group not found' });
+      }
+
+      if (group.owner.toString() === memberId) {
+        return res.status(403).json({ error: 'Cannot remove the group owner' });
+      }
+
+      group.members = group.members.filter(m => m.user);
+
+      const isMember = group.members.some(m => m.user?.toString() === memberId);
+      if (!isMember) {
+        return res.status(400).json({ error: 'User is not a member of the group' });
+      }
+
+      group.members = group.members.filter(m => m.user?.toString() !== memberId);
+      await group.save();
+
+      await User.findByIdAndUpdate(memberId, { $pull: { groups: groupId } });
+
+      res.status(200).json({ message: 'Member removed successfully', group });
+    } catch (err) {
+      console.error('❌ Failed to remove member:', err.message);
+      res.status(500).json({ error: 'Failed to remove member', details: err.message });
+    }
+  };
+
+
+const deleteGroup = async (req, res) => {
+  try {
+    const { groupId, userId } = req.params;
+    const group = await Group.findById(groupId);
+    if (!group) return res.status(404).json({ error: 'Group not found' });
+
+    if (group.owner.toString() !== userId) {
+      return res.status(403).json({ error: 'Only the group owner can delete the group' });
+    }
+
+    const memberIds = group.members.map(m => m.user.toString());
+
+    await Promise.all(
+      memberIds.map(async (id) => {
+        try {
+          await User.findByIdAndUpdate(id, { $pull: { groups: group._id } });
+        } catch (err) {
+          console.warn(`⚠️ Could not update user ${id}: ${err.message}`);
+        }
+      })
+    );
+
+    await group.deleteOne();
+    res.json({ message: 'Group deleted successfully' });
+  } catch (err) {
+    console.error('❌ Failed to delete group:', err.message);
+    res.status(500).json({ error: 'Failed to delete group', details: err.message });
+  }
+};
+
+const getTodaysGroupPostsSummary = async (req, res) => {
+    const groupId = req.params.groupId;
+    if (!groupId) return res.status(400).json({ error: "groupId is required" });
+
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    try {
+        const group = await Group.findById(groupId).select('description');
+        if (!group) return res.status(404).json({ error: "Group not found" });
+
+        const posts = await Post.find({
+            groupId,
+            createdAt: {
+                $gte: startOfDay,
+                $lte: endOfDay
+            }
+        })
+        .select('_id title type userId')
+        .populate('userId', 'username');
+
+        const result = posts.map(post => ({
+            _id: post._id,
+            title: post.title,
+            type: post.type,
+            userName: post.userId.username,
+            description: group.description
+        }));
+
+        return res.json(result);
+    } catch (err) {
+        console.error("Error in getTodaysGroupPostsSummary:", err);
+        return res.status(500).json({ error: "Server error fetching daily summary" });
+    }
+};
+
+const shareDailySummaryToFacebook = async (req, res) => {
+    const { message } = req.body;
+    try {
+        const params = new URLSearchParams();
+        params.append('message', message);
+        params.append('access_token', process.env.FACEBOOK_PAGE_ACCESS_TOKEN);
+
+        const fbRes = await fetch(`https://graph.facebook.com/${process.env.FACEBOOK_PAGE_ID}/feed`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: params.toString(),
+        });
+
+        const fbData = await fbRes.json();
+
+        if (fbRes.ok) {
+            console.log("Successfully posted to Facebook:", fbData);
+            return res.status(200).json({ success: true, postId: fbData.id });
+        } else {
+            console.error("Error posting to Facebook. Full response from Facebook:", fbData);
+            return res.status(fbRes.status || 500).json({
+                error: errorMessage,
+                facebookErrorDetails: fbData.error || fbData
+            });
+        }
+    } catch (err) {
+        console.error("Critical server error during Facebook share:", err);
+        return res.status(500).json({
+            error: "שגיאה פנימית בשרת בעת פרסום לפייסבוק",
+            details: err.message,
+            name: err.name
+        });
+    }
+  }
+
+  const searchGroupsWithPostsToday = async (req, res) => {
+  try {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const groupIdsWithPosts = await Post.distinct('groupId', {
+      createdAt: { $gte: startOfDay, $lte: endOfDay }
+    });
+
+    const groups = await Group.find({ _id: { $in: groupIdsWithPosts } });
+    res.json(groups);
+  } catch (err) {
+    console.error('❌ Error in searchGroupsWithPostsToday:', err.message);
+    res.status(500).json({ error: 'Failed to search groups with posts today', details: err.message });
+  }
+};
+
+const getPostCountsByGroupToday = async (req, res) => {
+  try {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const result = await Post.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startOfDay, $lte: endOfDay },
+          groupId: { $exists: true, $ne: null }
+        }
+      },
+      {
+        $group: {
+          _id: "$groupId",
+          postCount: { $sum: 1 }
+        }
+      },
+      {
+        $lookup: {
+          from: "groups",
+          localField: "_id",
+          foreignField: "_id",
+          as: "group"
+        }
+      },
+      {
+        $unwind: "$group"
+      },
+      {
+        $project: {
+          groupName: "$group.name",
+          postCount: 1
+        }
+      }
+    ]);
+
+    res.json(result);
+  } catch (err) {
+    console.error("Error in getPostCountsByGroupToday:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+}
+
+  const getGroupStats = async (req, res) => {
+  try {
+    const postsByGroup = await Post.aggregate([
+      { $match: { groupId: { $ne: null } } },
+      { $group: { _id: '$groupId', postCount: { $sum: 1 } } }
+    ]);
+    console.log("postsByGroup:", postsByGroup);
+
+    const membersByGroup = await Group.aggregate([
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          memberCount: {
+            $cond: {
+              if: { $isArray: '$members' },
+              then: { $size: '$members' },
+              else: 0
+            }
+          }
+        }
+      }
+    ]);
+
+    const stats = membersByGroup.map(group => {
+      const postStat = postsByGroup.find(p => String(p._id) === String(group._id)) || { postCount: 0 };
+      return {
+        groupId: group._id,
+        name: group.name,
+        members: group.memberCount,
+        posts: postStat.postCount
+      };
+    });
+
+    res.json({ success: true, stats });
+
+  } catch (err) {
+    console.error('שגיאה בקבלת סטטיסטיקות קבוצות:', err);
+    res.status(500).json({ success: false, error: 'שגיאה בשרת' });
+  }
+};
+
+module.exports = {
+  createGroup,
+  getGroupById,
+  addGroupMember,
+  searchGroups,
+  updateGroup,
+  removeMember,
+  deleteGroup,
+  getTodaysGroupPostsSummary,
+  searchGroupsWithPostsToday,
+  shareDailySummaryToFacebook,
+  getPostCountsByGroupToday,
+  getGroupStats
+};

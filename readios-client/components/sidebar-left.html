@@ -1,0 +1,60 @@
+<aside class="sidebar-left">
+<button id="openCreateGroupModal" class="btn btn-primary w-100 mb-3">יצירת קבוצה חדשה</button>
+
+<div id="createGroupModal" class="modal-overlay hidden">
+  <div class="modal-content">
+    <h2>יצירת קבוצה חדשה</h2>
+    <form id="createGroupForm">
+      <input type="text" id="groupNameInput" placeholder="שם הקבוצה" required />
+      <textarea id="groupDescriptionInput" placeholder="תיאור הקבוצה"></textarea>
+
+      <div class="image-selection mt-3">
+        <p class="mb-1">בחר תמונה:</p>
+        <div class="d-flex gap-2 flex-wrap">
+          <img src="../images/groups/group1.png" class="group-image-option selected" data-value="group1" />
+          <img src="../images/groups/group2.png" class="group-image-option" data-value="group2" />
+          <img src="../images/groups/group3.png" class="group-image-option" data-value="group3" />
+          <img src="../images/groups/group4.png" class="group-image-option" data-value="group4" />
+          <img src="../images/groups/group5.png" class="group-image-option" data-value="group5" />
+        </div>
+      </div>
+
+      <input type="hidden" id="groupImageInput" value="group1" />
+
+      <div class="form-buttons mt-3">
+        <button type="submit">צור קבוצה</button>
+        <button type="button" id="cancelCreateGroupBtn">ביטול</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+  <div class="groups">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h6 class="fw-bold m-0">הקבוצות שלי</h6>
+      <button id="addGroupBtn" class="btn btn-sm btn-outline-primary">+</button>
+    </div>
+
+    <div id="groupSearchSection" style="display: none;">
+      <input type="text" id="groupSearchInput" class="form-control form-control-sm mb-2" placeholder="חפש קבוצה לפי שם..." />
+      <div id="groupSearchResults" class="list-group small"></div>
+    </div>
+
+    <div id="groupsList"></div>
+  </div>
+
+  <div class="card mb-3">
+    <div class="card-header fw-bold text-center">סטטיסטיקות פוסטים לפי קבוצה</div>
+    <div class="card-body">
+      <canvas id="postsByGroupChart" height="200"></canvas>
+    </div>
+  </div>
+  <div class="card mt-4">
+  <div class="card-header fw-bold text-center">סטטיסטיקה לפי סוג פוסט</div>
+  <div class="card-body">
+    <canvas id="postTypesPieChart" height="200"></canvas>
+  </div>
+  </div>
+
+</aside>
