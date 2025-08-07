@@ -49,6 +49,7 @@ async function loadAllComponents() {
         console.warn("initGroupPage function not found in GroupPage.js");
     }
     
+    
 }
 
 document.addEventListener("DOMContentLoaded", () => {

@@ -240,9 +240,14 @@ async function getLatLngFromCity(cityName) {
   const apiKey = 'AIzaSyBIlmXXvuUYx3vxsddpHZw22G2CQLeAAlQ'; // אותו מפתח כמו במפה
   const res = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(cityName)}, Israel&key=${apiKey}`);
   const data = await res.json();
+  console.log(data);
   if (data.results && data.results.length > 0) {
     const location = data.results[0].geometry.location;
     return { lat: location.lat, lng: location.lng };
   }
   return null;
 }
+
+window.addEventListener("DOMContentLoaded", () => {
+  initSidebarRight();
+});
