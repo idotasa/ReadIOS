@@ -323,6 +323,47 @@ const getPostCountsByGroupToday = async (req, res) => {
   } catch (err) {
     console.error("Error in getPostCountsByGroupToday:", err);
     res.status(500).json({ error: "Server error" });
+
+  const getGroupStats = async (req, res) => {
+  try {
+    const postsByGroup = await Post.aggregate([
+      { $match: { groupId: { $ne: null } } },
+      { $group: { _id: '$groupId', postCount: { $sum: 1 } } }
+    ]);
+    console.log("postsByGroup:", postsByGroup);
+
+    const membersByGroup = await Group.aggregate([
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          memberCount: {
+            $cond: {
+              if: { $isArray: '$members' },
+              then: { $size: '$members' },
+              else: 0
+            }
+          }
+        }
+      }
+    ]);
+
+    // שילוב לפי _id (groupId)
+    const stats = membersByGroup.map(group => {
+      const postStat = postsByGroup.find(p => String(p._id) === String(group._id)) || { postCount: 0 };
+      return {
+        groupId: group._id,
+        name: group.name,
+        members: group.memberCount,
+        posts: postStat.postCount
+      };
+    });
+
+    res.json({ success: true, stats });
+
+  } catch (err) {
+    console.error('שגיאה בקבלת סטטיסטיקות קבוצות:', err);
+    res.status(500).json({ success: false, error: 'שגיאה בשרת' });
   }
 };
 
@@ -336,6 +377,7 @@ module.exports = {
   deleteGroup,
   getTodaysGroupPostsSummary,
   searchGroupsWithPostsToday,
-  shareDailySummaryToFacebook,
+  SummaryToFacebook,
   getPostCountsByGroupToday
+  getGroupStats
 };
