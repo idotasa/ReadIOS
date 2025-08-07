@@ -181,3 +181,32 @@ exports.getFeedForGroup = async (req, res) => {
   }
 };
 
+
+exports.getPostCountsByType = async (req, res) => {
+  try {
+    const counts = await Post.aggregate([
+      {
+        $group: {
+          _id: '$type',
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          type: '$_id',
+          count: 1
+        }
+      }
+    ]);
+
+    res.json(counts);
+  } catch (err) {
+    console.error('Error in getPostCountsByType:', err);
+    res.status(500).json({ error: 'שגיאה בסטטיסטיקת סוגי פוסטים' });
+  }
+};
+
+
+
+

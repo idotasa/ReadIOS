@@ -1,6 +1,6 @@
 function initSidebarLeft() {
   const userId = localStorage.getItem("userId");
-
+  console.log("📥 initSidebarLeft loaded")
   const addGroupBtn = document.getElementById("addGroupBtn");
   const groupSearchSection = document.getElementById("groupSearchSection");
   const groupSearchInput = document.getElementById("groupSearchInput");
@@ -69,6 +69,7 @@ function initSidebarLeft() {
       console.error(err);
     }
   });
+  
 
   function resetImageSelection() {
     document.querySelectorAll(".group-image-option").forEach(i => i.classList.remove("selected"));
@@ -149,6 +150,8 @@ function initSidebarLeft() {
   });
 
   loadGroups();
+  renderPostsByGroupChart();
+  renderPostTypesPieChart();
 }
 
 async function loadGroups() {
@@ -275,3 +278,110 @@ try {
 }
 
 }
+async function fetchPostsByGroupToday() {
+  try {
+    const res = await fetch('/api/groups/stats/postsByGroupToday');
+    if (!res.ok) throw new Error('Failed to fetch stats');
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    console.error('❌ Error fetching postsByGroupToday:', err);
+    return [];
+  }
+}
+
+async function renderPostsByGroupChart() {
+  const canvas = document.getElementById('postsByGroupChart');
+  if (!canvas) {
+    console.warn('📉 postsByGroupChart canvas not found');
+    return;
+  }
+
+  console.log('📊 Rendering postsByGroupChart...');
+  const stats = await fetchPostsByGroupToday();
+  if (!stats || stats.length === 0) {
+    console.warn('📉 No data for postsByGroupChart');
+    return;
+  }
+
+  const labels = stats.map(g => g.groupName);
+  const data = stats.map(g => g.postCount);
+
+  const ctx = canvas.getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'פוסטים שפורסמו היום',
+        data,
+        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            precision: 0
+          }
+        }
+      }
+    }
+  });
+}
+
+async function fetchPostTypeStats() {
+  try {
+    const res = await fetch('/api/posts/stats/byType');
+    if (!res.ok) throw new Error('שגיאה בשליפת נתוני סוגי פוסטים');
+    return await res.json();
+  } catch (err) {
+    console.error('❌ fetchPostTypeStats:', err);
+    return [];
+  }
+}
+
+async function renderPostTypesPieChart() {
+  const canvas = document.getElementById('postTypesPieChart');
+  if (!canvas) {
+    console.warn('⚠️ postTypesPieChart canvas not found');
+    return;
+  }
+
+  const stats = await fetchPostTypeStats();
+  if (!stats || stats.length === 0) {
+    console.warn('⚠️ אין נתונים לגרף סוגי פוסטים');
+    return;
+  }
+
+  const labels = stats.map(item => item.type);
+  const data = stats.map(item => item.count);
+
+  new Chart(canvas.getContext('2d'), {
+    type: 'pie',
+    data: {
+      labels,
+      datasets: [{
+        data,
+        backgroundColor: [
+          '#36A2EB', '#FF6384', '#FFCE56', '#4BC0C0', '#9966FF'
+        ],
+        borderColor: 'white',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'bottom'
+        }
+      }
+    }
+  });
+}
+

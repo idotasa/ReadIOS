@@ -78,8 +78,6 @@ const addGroupMember = async (req, res) => {
   }
 };
 
-
-
 const searchGroups = async (req, res) => {
   try {
     const search = typeof req.query.search === 'string' ? req.query.search.trim() : null;
@@ -97,7 +95,6 @@ const searchGroups = async (req, res) => {
 };
 
 
-// Update group (owner only)
 const updateGroup = async (req, res) => {
   try {
     const userId = decoded.id;
@@ -225,7 +222,6 @@ const getTodaysGroupPostsSummary = async (req, res) => {
     }
 };
 
-
 const shareDailySummaryToFacebook = async (req, res) => {
     const { message } = req.body;
     try {
@@ -263,6 +259,72 @@ const shareDailySummaryToFacebook = async (req, res) => {
     }
   }
 
+  const searchGroupsWithPostsToday = async (req, res) => {
+  try {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const groupIdsWithPosts = await Post.distinct('groupId', {
+      createdAt: { $gte: startOfDay, $lte: endOfDay }
+    });
+
+    const groups = await Group.find({ _id: { $in: groupIdsWithPosts } });
+    res.json(groups);
+  } catch (err) {
+    console.error('❌ Error in searchGroupsWithPostsToday:', err.message);
+    res.status(500).json({ error: 'Failed to search groups with posts today', details: err.message });
+  }
+};
+
+const getPostCountsByGroupToday = async (req, res) => {
+  try {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const result = await Post.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startOfDay, $lte: endOfDay },
+          groupId: { $exists: true, $ne: null }
+        }
+      },
+      {
+        $group: {
+          _id: "$groupId",
+          postCount: { $sum: 1 }
+        }
+      },
+      {
+        $lookup: {
+          from: "groups",
+          localField: "_id",
+          foreignField: "_id",
+          as: "group"
+        }
+      },
+      {
+        $unwind: "$group"
+      },
+      {
+        $project: {
+          groupName: "$group.name",
+          postCount: 1
+        }
+      }
+    ]);
+
+    res.json(result);
+  } catch (err) {
+    console.error("Error in getPostCountsByGroupToday:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+}
+
   const getGroupStats = async (req, res) => {
   try {
     const postsByGroup = await Post.aggregate([
@@ -287,7 +349,6 @@ const shareDailySummaryToFacebook = async (req, res) => {
       }
     ]);
 
-    // שילוב לפי _id (groupId)
     const stats = membersByGroup.map(group => {
       const postStat = postsByGroup.find(p => String(p._id) === String(group._id)) || { postCount: 0 };
       return {
@@ -315,6 +376,8 @@ module.exports = {
   removeMember,
   deleteGroup,
   getTodaysGroupPostsSummary,
+  searchGroupsWithPostsToday,
   shareDailySummaryToFacebook,
+  getPostCountsByGroupToday,
   getGroupStats
 };

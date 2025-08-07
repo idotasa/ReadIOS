@@ -139,3 +139,51 @@
   border-color: #0d6efd;
   box-shadow: 0 0 6px rgba(13,110,253,0.6);
 }
+
+.search-button-wrapper {
+  width: 100%;
+  max-width: 400px;
+  cursor: pointer;
+}
+
+.search-button-fake {
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  padding: 6px 16px;
+  text-align: center;
+  background-color: #f9f9f9;
+  color: #333;
+}
+
+.search-modal .form-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  width: fit-content;
+}
+
+.search-modal .form-check-input {
+  margin: 0;
+  transform: scale(0.9); 
+}
+
+#searchModal .form-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: fit-content;
+  margin-bottom: 0.5rem;
+}
+
+#searchModal .form-check-input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+}
+
+#searchModal .form-check-label {
+  font-size: 0.9rem;
+  margin: 0;
+  padding: 0;
+}
