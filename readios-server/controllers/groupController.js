@@ -2,6 +2,9 @@ const Group = require('../models/Group');
 const User = require('../models/User');
 const Post = require('../models/Post');
 const fetch = require('node-fetch')
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 const createGroup = async (req, res) => {
   try {
