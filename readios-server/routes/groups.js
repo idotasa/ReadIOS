@@ -25,7 +25,7 @@ router.post('/:groupId/members/:userId', addGroupMember);
 router.get('/', searchGroups); // Search groups by name
 router.delete('/:id/members/:memberId', removeMember); // Remove member (owner only)
 router.put('/:id', updateGroup); // Update group (owner only)
-router.delete('/:id', deleteGroup);
+router.delete('/:groupId/owner/:userId', deleteGroup);
 router.get('/:id', getGroupById); // Get group details
 
 module.exports = router;

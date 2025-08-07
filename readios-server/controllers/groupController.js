@@ -155,8 +155,8 @@ const updateGroup = async (req, res) => {
 
 const deleteGroup = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const group = await Group.findById(req.params.id);
+    const { groupId, userId } = req.params;
+    const group = await Group.findById(groupId);
     if (!group) return res.status(404).json({ error: 'Group not found' });
 
     if (group.owner.toString() !== userId) {

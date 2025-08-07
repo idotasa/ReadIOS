@@ -6,7 +6,19 @@ async function loadGroupPostsFromServer() {
   try {
     const pathParts = window.location.pathname.split('/');
     const groupId = pathParts[pathParts.length - 1];
-    
+    const userId = localStorage.getItem("userId");
+
+    const groupRes = await fetch(`/api/groups/${groupId}`);
+    if (!groupRes.ok) throw new Error('שגיאה בשליפת נתוני הקבוצה');
+
+    const groupData = await groupRes.json();
+    const groupOwnerId = groupData.owner;
+
+    const isOwner = userId === groupOwnerId;
+
+    if (isOwner) {
+      insertDeleteGroupButton(groupId, userId);
+    }
 
     const res = await fetch(`/api/posts/feed/groups/${groupId}`);
     if (!res.ok) throw new Error('שגיאה בשליפת פוסטים של הקבוצה');
@@ -102,3 +114,36 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+function insertDeleteGroupButton(groupId, userId) {
+  const parentContainer = document.querySelector('.col-12.col-md-8');
+  if (!parentContainer) return;
+
+  if (document.querySelector('.delete-group-btn')) return;
+
+  const btn = document.createElement('button');
+  btn.className = 'btn btn-danger mt-3 delete-group-btn';
+  btn.textContent = ' מחיקת קבוצה 🗑️';
+
+  btn.addEventListener('click', async () => {
+    const confirmDelete = confirm('האם אתה בטוח שברצונך למחוק את הקבוצה? כל הפוסטים יימחקו!');
+    if (!confirmDelete) return;
+
+    try {
+      const res = await fetch(`/api/groups/${groupId}/owner/${userId}`, {
+        method: 'DELETE'
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "שגיאה במחיקת הקבוצה");
+
+      alert("הקבוצה נמחקה בהצלחה");
+      window.location.href = '/';
+
+    } catch (err) {
+      console.error('שגיאה במחיקת קבוצה:', err.message);
+      alert("אירעה שגיאה בעת מחיקת הקבוצה");
+    }
+  });
+
+  parentContainer.prepend(btn);
+}
