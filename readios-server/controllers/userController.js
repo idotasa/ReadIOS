@@ -89,14 +89,19 @@ exports.updateUserDetails = async (req, res) => {
 };
 
 
-// Todo: remove from friends, groups, posts etc...
 exports.deleteUser = async (req, res) => {
   try {
-    const user = await fetchUserById(req.params.id)
-    await User.deleteOne(user);
+    const userId = req.params.id;
 
-    res.json({ message: 'User deleted successfully' });
+    await Group.updateMany(
+      { "members.user": userId },
+      { $pull: { members: { user: userId } } }
+    );
+
+    await User.deleteOne({ _id: userId });
+    res.json({ message: 'User deleted successfully and removed from groups' });
   } catch (err) {
+    console.error('❌ Deletion failed:', err.message);
     res.status(500).json({ message: 'Deletion failed', error: err.message });
   }
 };
