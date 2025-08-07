@@ -1,5 +1,13 @@
 async function initTopbar() {
+  console.log("✅ initTopbar התחיל לפעול");
   const userId = localStorage.getItem("userId");
+  if (!userId || userId.length !== 24) {
+  console.warn("⚠️ userId לא תקין:", userId);
+  localStorage.removeItem("userId");
+  window.location.href = "/login";
+  return;
+  }
+  
   if (!userId) {
     window.location.href = "/login";
     return;
@@ -130,6 +138,140 @@ async function initTopbar() {
       console.error(err);
     }
   });
+
+  const resultsContainer = document.getElementById("topbar-search-results");
+
+  // סגירה של תוצאות חיפוש בלחיצה מחוץ
+  document.addEventListener("click", (e) => {
+    if (!resultsContainer.contains(e.target) && !e.target.closest("#searchModal") && !e.target.closest("#searchBtn")) {
+      resultsContainer.style.display = "none";
+    }
+  });
+
+  // כפתור חיפוש מתקדם
+  const searchModal = document.getElementById("searchModal");
+
+searchModal.addEventListener("shown.bs.modal", () => {
+  const searchBtn = document.getElementById("searchBtn");
+  if (!searchBtn.dataset.connected) {
+    searchBtn.addEventListener("click", async () => {
+      console.log("🔍 כפתור חיפוש נלחץ"); // לוודא שזה עובד
+
+      const resultsContainer = document.getElementById("topbar-search-results");
+      const searchType = document.getElementById("search-type").value;
+      resultsContainer.innerHTML = "";
+      resultsContainer.style.display = "block";
+
+      let foundResults = false;
+
+      if (searchType === "user") {
+        const username = document.getElementById("search-username").value;
+        const location = document.getElementById("search-location").value;
+        const isFriend = document.getElementById("search-isFriend").checked;
+
+        try {
+          const userParams = new URLSearchParams();
+          if (username) userParams.append("search", username);
+          if (location) userParams.append("location", location);
+          if (isFriend) userParams.append("isFriend", "true");
+
+          console.log("🔍 מחפש משתמשים:", userParams.toString());
+
+          const res = await fetch(`http://localhost:5000/api/users?${userParams}`);
+          const users = await res.json();
+
+          if (users.length > 0) {
+            foundResults = true;
+            users.forEach(user => {
+              const li = document.createElement("li");
+              li.className = "list-group-item p-0";
+              li.innerHTML = `
+                <a href="/user.html?id=${user._id}" class="d-flex align-items-center gap-2 p-2 text-decoration-none text-dark">
+                  <img src="../images/users/${user.profileImage || 'default'}.png" width="32" height="32" class="rounded-circle">
+                  <div>
+                    <div class="fw-bold">${user.username}</div>
+                    <small>${user.location || 'מיקום לא צוין'}</small>
+                  </div>
+                </a>`;
+              resultsContainer.appendChild(li);
+            });
+          }
+        } catch (err) {
+          console.error("שגיאה בחיפוש משתמשים:", err);
+        }
+      }
+
+      if (searchType === "group") {
+        const groupName = document.getElementById("search-groupName").value.trim();
+        const groupUser = document.getElementById("search-groupUser").value.trim();
+        const postToday = document.getElementById("search-group-postToday").checked;
+
+        try {
+          const groupParams = new URLSearchParams();
+          if (groupName) groupParams.append("search", groupName);
+          if (groupUser) groupParams.append("hasUserId", groupUser);
+
+          const endpoint = postToday ? "searchWithPostsToday" : "";
+          const fullUrl = `http://localhost:5000/api/groups/${endpoint}?${groupParams}`;
+
+          console.log("🔍 מחפש קבוצות:", fullUrl);
+
+          const resGroups = await fetch(fullUrl);
+          const groups = await resGroups.json();
+
+          if (groups.length > 0) {
+            foundResults = true;
+            groups.forEach(group => {
+              const li = document.createElement("li");
+              li.className = "list-group-item p-0";
+              li.innerHTML = `
+                <a href="/group.html?id=${group._id}" class="d-flex flex-column align-items-start p-2 text-decoration-none text-dark">
+                  <div class="fw-bold">${group.name}</div>
+                  <small>${group.description || 'ללא תיאור'}</small>
+                </a>`;
+              resultsContainer.appendChild(li);
+            });
+          } else {
+            resultsContainer.innerHTML = `<li class="list-group-item text-center text-muted">❌ לא נמצאו קבוצות תואמות</li>`;
+          }
+        } catch (err) {
+          console.error("שגיאה בחיפוש קבוצות:", err);
+        }
+      }
+
+      if (!foundResults && resultsContainer.innerHTML.trim() === "") {
+        resultsContainer.innerHTML = `<li class="list-group-item text-center text-muted">❌ לא נמצאו תוצאות</li>`;
+      }
+
+      const modalInstance = bootstrap.Modal.getInstance(document.getElementById("searchModal"));
+      if (modalInstance) modalInstance.hide();
+    });
+
+    searchBtn.dataset.connected = "true"; // לוודא שהמאזין לא יתווסף פעמיים
+  }
+});
+
+
+  // 🌟 החלפת שדות חיפוש (משתמשים / קבוצות)
+  const searchTypeSelect = document.getElementById("search-type");
+  const userFields = document.getElementById("user-search-fields");
+  const groupFields = document.getElementById("group-search-fields");
+
+  if (searchTypeSelect && userFields && groupFields) {
+    searchTypeSelect.addEventListener("change", () => {
+      if (searchTypeSelect.value === "user") {
+        userFields.classList.remove("d-none");
+        groupFields.classList.add("d-none");
+      } else {
+        groupFields.classList.remove("d-none");
+        userFields.classList.add("d-none");
+      }
+    });
+
+    searchTypeSelect.dispatchEvent(new Event("change"));
+  }
+  
+
 }
 
-document.addEventListener("DOMContentLoaded", initTopbar);
+

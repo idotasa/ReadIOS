@@ -78,8 +78,6 @@ const addGroupMember = async (req, res) => {
   }
 };
 
-
-
 const searchGroups = async (req, res) => {
   try {
     const search = typeof req.query.search === 'string' ? req.query.search.trim() : null;
@@ -263,6 +261,26 @@ const shareDailySummaryToFacebook = async (req, res) => {
     }
   }
 
+  const searchGroupsWithPostsToday = async (req, res) => {
+  try {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const groupIdsWithPosts = await Post.distinct('groupId', {
+      createdAt: { $gte: startOfDay, $lte: endOfDay }
+    });
+
+    const groups = await Group.find({ _id: { $in: groupIdsWithPosts } });
+    res.json(groups);
+  } catch (err) {
+    console.error('❌ Error in searchGroupsWithPostsToday:', err.message);
+    res.status(500).json({ error: 'Failed to search groups with posts today', details: err.message });
+  }
+};
+
 module.exports = {
   createGroup,
   getGroupById,
@@ -272,5 +290,6 @@ module.exports = {
   removeMember,
   deleteGroup,
   getTodaysGroupPostsSummary,
+   searchGroupsWithPostsToday,
   shareDailySummaryToFacebook
 };
