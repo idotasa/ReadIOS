@@ -155,23 +155,31 @@ exports.removeFriend = async (req, res) => {
 
 exports.searchUsersContainsName = async (req, res) => {
   try {
-    const { search } = req.query;
+    const { search, location, isFriend, userId } = req.query;
 
-    let users;
-    if (!search) {
-      users = await User.find().select('-password');
+    let query = {};
+
+    if (search) {
+      query.username = { $regex: new RegExp(search, 'i') };
     }
 
-    else {
-      const regex = new RegExp(search, 'i');
-      users = await User.find({ username: { $regex: regex } }).select('-password');
+    if (location) {
+      query.location = { $regex: new RegExp(location, 'i') };
     }
 
+    if (isFriend === 'true' && userId) {
+      const user = await User.findById(userId).select('friends');
+      if (!user) return res.status(404).json({ message: "User not found" });
+      query._id = { $in: user.friends };
+    }
+
+    const users = await User.find(query).select('-password');
     res.json(users);
   } catch (err) {
     res.status(500).json({ message: 'Search failed', error: err.message });
   }
 };
+
 
 
 exports.GetUserFriends = async (req, res) => {

@@ -173,7 +173,10 @@ searchModal.addEventListener("shown.bs.modal", () => {
           const userParams = new URLSearchParams();
           if (username) userParams.append("search", username);
           if (location) userParams.append("location", location);
-          if (isFriend) userParams.append("isFriend", "true");
+          if (isFriend) {
+                          userParams.append("isFriend", "true");
+                          userParams.append("userId", userId); // ✅ הוספה קריטית!
+                        }
 
           console.log("🔍 מחפש משתמשים:", userParams.toString());
 
@@ -209,7 +212,11 @@ searchModal.addEventListener("shown.bs.modal", () => {
         try {
           const groupParams = new URLSearchParams();
           if (groupName) groupParams.append("search", groupName);
-          if (groupUser) groupParams.append("hasUserId", groupUser);
+          if (groupUser) {
+                            groupParams.append("hasUserId", groupUser);
+                          } else {
+                            groupParams.append("hasUserId", userId); 
+                          }
 
           const endpoint = postToday ? "searchWithPostsToday" : "";
           const fullUrl = `http://localhost:5000/api/groups/${endpoint}?${groupParams}`;
