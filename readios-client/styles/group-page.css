@@ -240,3 +240,11 @@
   display: none !important;
 }
 
+.delete-group-btn {
+  display: block;
+  width: 100%;
+  max-width: 300px;
+  margin: 1rem auto;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
