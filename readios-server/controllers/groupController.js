@@ -95,7 +95,6 @@ const searchGroups = async (req, res) => {
 };
 
 
-// Update group (owner only)
 const updateGroup = async (req, res) => {
   try {
     const userId = decoded.id;
@@ -323,6 +322,8 @@ const getPostCountsByGroupToday = async (req, res) => {
   } catch (err) {
     console.error("Error in getPostCountsByGroupToday:", err);
     res.status(500).json({ error: "Server error" });
+  }
+}
 
   const getGroupStats = async (req, res) => {
   try {
@@ -348,7 +349,6 @@ const getPostCountsByGroupToday = async (req, res) => {
       }
     ]);
 
-    // שילוב לפי _id (groupId)
     const stats = membersByGroup.map(group => {
       const postStat = postsByGroup.find(p => String(p._id) === String(group._id)) || { postCount: 0 };
       return {
@@ -377,7 +377,7 @@ module.exports = {
   deleteGroup,
   getTodaysGroupPostsSummary,
   searchGroupsWithPostsToday,
-  SummaryToFacebook,
-  getPostCountsByGroupToday
+  shareDailySummaryToFacebook,
+  getPostCountsByGroupToday,
   getGroupStats
 };

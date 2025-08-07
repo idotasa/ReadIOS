@@ -141,21 +141,21 @@ async function initTopbar() {
 
   const resultsContainer = document.getElementById("topbar-search-results");
 
-  // סגירה של תוצאות חיפוש בלחיצה מחוץ
+
   document.addEventListener("click", (e) => {
     if (!resultsContainer.contains(e.target) && !e.target.closest("#searchModal") && !e.target.closest("#searchBtn")) {
       resultsContainer.style.display = "none";
     }
   });
 
-  // כפתור חיפוש מתקדם
+
   const searchModal = document.getElementById("searchModal");
 
 searchModal.addEventListener("shown.bs.modal", () => {
   const searchBtn = document.getElementById("searchBtn");
   if (!searchBtn.dataset.connected) {
     searchBtn.addEventListener("click", async () => {
-      console.log("🔍 כפתור חיפוש נלחץ"); // לוודא שזה עובד
+      console.log("🔍 כפתור חיפוש נלחץ");
 
       const resultsContainer = document.getElementById("topbar-search-results");
       const searchType = document.getElementById("search-type").value;
@@ -247,12 +247,11 @@ searchModal.addEventListener("shown.bs.modal", () => {
       if (modalInstance) modalInstance.hide();
     });
 
-    searchBtn.dataset.connected = "true"; // לוודא שהמאזין לא יתווסף פעמיים
+    searchBtn.dataset.connected = "true";
   }
 });
 
 
-  // 🌟 החלפת שדות חיפוש (משתמשים / קבוצות)
   const searchTypeSelect = document.getElementById("search-type");
   const userFields = document.getElementById("user-search-fields");
   const groupFields = document.getElementById("group-search-fields");
@@ -273,5 +272,7 @@ searchModal.addEventListener("shown.bs.modal", () => {
   
 
 }
+
+document.addEventListener("DOMContentLoaded", initTopbar);
 
 
