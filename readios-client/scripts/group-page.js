@@ -1,5 +1,8 @@
+let allGroupPosts = []; // מאגר כל הפוסטים בקבוצה
+
 async function initGroupPage() {
   await loadGroupPostsFromServer();
+  setupSearchGroup();
 }
 
 async function loadGroupPostsFromServer() {
@@ -15,10 +18,7 @@ async function loadGroupPostsFromServer() {
     const groupOwnerId = groupData.owner;
 
     const isOwner = userId === groupOwnerId;
-
-    if (isOwner) {
-      insertDeleteGroupButton(groupId, userId);
-    }
+    if (isOwner) insertDeleteGroupButton(groupId, userId);
 
     const res = await fetch(`/api/posts/feed/groups/${groupId}`);
     if (!res.ok) throw new Error('שגיאה בשליפת פוסטים של הקבוצה');
@@ -26,42 +26,60 @@ async function loadGroupPostsFromServer() {
     const data = await res.json();
     const posts = data.posts || [];
     const emptyMsg = document.getElementById('empty-feed-message');
-    if (!posts || posts.length === 0 || posts.every(p => !p || Object.keys(p).length === 0)) {
-        if (emptyMsg) {
-            emptyMsg.style.display = 'block';
-            emptyMsg.textContent = 'אין פוסטים בקבוצה הזו.';
-        }
-        return;
+
+    if (!posts.length || posts.every(p => !p || Object.keys(p).length === 0)) {
+      if (emptyMsg) {
+        emptyMsg.style.display = 'block';
+        emptyMsg.textContent = 'אין פוסטים בקבוצה הזו.';
+      }
+      return;
     }
 
     if (emptyMsg) emptyMsg.style.display = 'none';
 
-    fetch('/api/groups/stats')
-    .then(res => res.json())
-    .then(data => {
-        console.log(data.stats);
-    });
+    allGroupPosts = posts; // שמירת כל הפוסטים למשתנה גלובלי
 
-    posts.forEach(post => {
-      addPostToFeedGroup(post);
-    });
+    renderGroupPosts(posts);
 
   } catch (err) {
     console.error('שגיאה בטעינת פוסטים של הקבוצה:', err.message);
   }
 }
 
+function renderGroupPosts(posts) {
+  const feedArea = document.querySelector('.feed-area');
+  feedArea.innerHTML = '';
+  posts.forEach(post => addPostToFeedGroup(post));
+}
+
+function setupSearchGroup() {
+  const searchInput = document.getElementById('postSearchInput');
+  searchInput.addEventListener('input', () => {
+    const searchTerm = searchInput.value.trim().toLowerCase();
+
+    if (!searchTerm) {
+      renderGroupPosts(allGroupPosts);
+      return;
+    }
+
+    const filteredPosts = allGroupPosts.filter(post =>
+      post.title && post.title.toLowerCase().includes(searchTerm)
+    );
+
+    renderGroupPosts(filteredPosts);
+  });
+}
+
 function addPostToFeedGroup(post) {
+  // הנחה: פונקציית window.addPostToFeed קיימת בקוד שלך ומציגה פוסט בפיד
   window.addPostToFeed(post);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   const btn = document.getElementById('scrollToTopBtn');
-
   window.addEventListener('scroll', () => {
     btn.style.display = window.scrollY > 300 ? 'flex' : 'none';
   });
-
   btn.addEventListener('click', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
@@ -81,7 +99,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!container) return;
       if (!group) {
         container.innerHTML = '<p>לא נמצאו פוסטים בקבוצה הזו.</p>';
-        console.log("check")
         return;
       }
 
@@ -112,7 +129,6 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('group-stats-table').innerHTML = '<p class="text-danger">אירעה שגיאה בטעינת הקבוצה.</p>';
     });
 });
-
 
 function insertDeleteGroupButton(groupId, userId) {
   const parentContainer = document.querySelector('.col-12.col-md-8');
