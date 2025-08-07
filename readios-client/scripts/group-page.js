@@ -38,7 +38,6 @@ async function loadGroupPostsFromServer() {
     if (emptyMsg) emptyMsg.style.display = 'none';
 
     allGroupPosts = posts;
-
     renderGroupPosts(posts);
 
   } catch (err) {
@@ -49,7 +48,44 @@ async function loadGroupPostsFromServer() {
 function renderGroupPosts(posts) {
   const feedArea = document.querySelector('.feed-area');
   feedArea.innerHTML = '';
-  posts.forEach(post => addPostToFeedGroup(post));
+  posts.forEach(post => renderPostCardForGroup(post));
+}
+
+function renderPostCardForGroup(post) {
+  const userId = localStorage.getItem("userId");
+  const feedArea = document.querySelector('.feed-area');
+
+  const postCard = document.createElement('div');
+  postCard.classList.add('post-card');
+
+  const createdAt = new Date(post.createdAt).toLocaleString();
+  const type = post.type || '';
+
+  let mediaHTML = '';
+  if (type.includes('image')) {
+    mediaHTML += `<img src="/${post.url}" class="post-media" />`;
+  } else if (type.includes('video')) {
+    mediaHTML += `<video src="${post.url}" controls class="post-media"></video>`;
+  }
+
+  postCard.innerHTML = `
+    <div class="post-header d-flex justify-content-between align-items-start">
+      <div class="d-flex align-items-center">
+        <img src="/images/users/${post.userId.profileImage}.png" class="avatar me-2" alt="User avatar" />
+        <div class="post-meta">
+          <strong class="username">${post.userId?.username}</strong>
+          <div class="time">${createdAt}</div>
+        </div>
+      </div>
+    </div>
+    <div class="post-body">
+      <h3 class="post-title">${post.title}</h3>
+      <p class="post-content">${post.content}</p>
+      ${mediaHTML}
+    </div>
+  `;
+
+  feedArea.appendChild(postCard);
 }
 
 function setupSearchGroup() {
@@ -70,8 +106,38 @@ function setupSearchGroup() {
   });
 }
 
-function addPostToFeedGroup(post) {
-  window.addPostToFeed(post);
+function insertDeleteGroupButton(groupId, userId) {
+  const parentContainer = document.querySelector('.col-12.col-md-8');
+  if (!parentContainer) return;
+
+  if (document.querySelector('.delete-group-btn')) return;
+
+  const btn = document.createElement('button');
+  btn.className = 'btn btn-danger mt-3 delete-group-btn';
+  btn.textContent = ' מחיקת קבוצה 🗑️';
+
+  btn.addEventListener('click', async () => {
+    const confirmDelete = confirm('האם אתה בטוח שברצונך למחוק את הקבוצה? כל הפוסטים יימחקו!');
+    if (!confirmDelete) return;
+
+    try {
+      const res = await fetch(`/api/groups/${groupId}/owner/${userId}`, {
+        method: 'DELETE'
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "שגיאה במחיקת הקבוצה");
+
+      alert("הקבוצה נמחקה בהצלחה");
+      window.location.href = '/';
+
+    } catch (err) {
+      console.error('שגיאה במחיקת קבוצה:', err.message);
+      alert("אירעה שגיאה בעת מחיקת הקבוצה");
+    }
+  });
+
+  parentContainer.prepend(btn);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -84,9 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   initGroupPage();
-});
 
-document.addEventListener('DOMContentLoaded', () => {
   const currentGroupId = window.location.pathname.split('/').pop();
   fetch('/api/groups/stats')
     .then(res => res.json())
@@ -128,37 +192,3 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('group-stats-table').innerHTML = '<p class="text-danger">אירעה שגיאה בטעינת הקבוצה.</p>';
     });
 });
-
-function insertDeleteGroupButton(groupId, userId) {
-  const parentContainer = document.querySelector('.col-12.col-md-8');
-  if (!parentContainer) return;
-
-  if (document.querySelector('.delete-group-btn')) return;
-
-  const btn = document.createElement('button');
-  btn.className = 'btn btn-danger mt-3 delete-group-btn';
-  btn.textContent = ' מחיקת קבוצה 🗑️';
-
-  btn.addEventListener('click', async () => {
-    const confirmDelete = confirm('האם אתה בטוח שברצונך למחוק את הקבוצה? כל הפוסטים יימחקו!');
-    if (!confirmDelete) return;
-
-    try {
-      const res = await fetch(`/api/groups/${groupId}/owner/${userId}`, {
-        method: 'DELETE'
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "שגיאה במחיקת הקבוצה");
-
-      alert("הקבוצה נמחקה בהצלחה");
-      window.location.href = '/';
-
-    } catch (err) {
-      console.error('שגיאה במחיקת קבוצה:', err.message);
-      alert("אירעה שגיאה בעת מחיקת הקבוצה");
-    }
-  });
-
-  parentContainer.prepend(btn);
-}
