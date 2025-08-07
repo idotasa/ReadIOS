@@ -125,11 +125,8 @@ exports.getFeedForUser = async (req, res) => {
       .populate('groupId', 'name image')
       .lean();
 
-    const groupPostIds = new Set(groupPosts.map(p => p._id.toString()));
-
     // other friends
     const friendPosts = await Post.find({
-      groupId: { $exists: false },
       userId: { $in: friendIds }
     })
       .populate('userId', 'username profileImage')
