@@ -108,7 +108,6 @@ window.addPostToFeed = function(post, prepend = false, isSearch = false) {
                 if (!res.ok) throw new Error(result.message || "שגיאה במחיקה");
 
                 postCard.remove();
-                // הסר את הפוסט גם מהמערך allPosts
                 allPosts = allPosts.filter(p => p._id !== post._id);
 
             } catch (err) {

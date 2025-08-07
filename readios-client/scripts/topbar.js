@@ -174,7 +174,7 @@ searchModal.addEventListener("shown.bs.modal", () => {
           if (location) userParams.append("location", location);
           if (isFriend) {
                           userParams.append("isFriend", "true");
-                          userParams.append("userId", userId); // ✅ הוספה קריטית!
+                          userParams.append("userId", userId);
                         }
 
           console.log("🔍 מחפש משתמשים:", userParams.toString());

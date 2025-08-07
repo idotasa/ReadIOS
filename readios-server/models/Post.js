@@ -13,7 +13,7 @@ const postSchema = new mongoose.Schema({
   title:    { type: String, required: true },
   content:  { type: String },
   type:     { type: String, enum: ['text', 'image', 'video', 'image+text', 'video+text'], required: true },
-  url:      { type: String }, // Optional URL for image or video
+  url:      { type: String },
   likes:    [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   comments: [commentSchema],
   createdAt: { type: Date, default: Date.now }

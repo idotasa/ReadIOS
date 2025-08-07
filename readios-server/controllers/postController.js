@@ -11,7 +11,6 @@ exports.createPost = async (req, res) => {
     if (!userId || !title || !type) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
-    // Todo: add group check
     await fetchUserById(userId);
 
     const post = new Post({
@@ -117,7 +116,6 @@ exports.getFeedForUser = async (req, res) => {
     const friendIds = user.friends.map(id => id.toString());
     const groupIds = user.groups.map(id => id.toString());
 
-    // groups
     const groupPosts = await Post.find({
       groupId: { $in: groupIds }
     })
@@ -125,20 +123,17 @@ exports.getFeedForUser = async (req, res) => {
       .populate('groupId', 'name image')
       .lean();
 
-    // other friends
     const friendPosts = await Post.find({
       userId: { $in: friendIds }
     })
       .populate('userId', 'username profileImage')
       .lean();
 
-    // user posts
     const userPosts = await Post.find({ userId })
       .populate('userId', 'username profileImage')
       .populate('groupId', 'name image')
       .lean();
 
-    // validate and remove 
     const allPostsMap = new Map();
     [...groupPosts, ...friendPosts, ...userPosts].forEach(post => {
       allPostsMap.set(post._id.toString(), post);
@@ -146,7 +141,6 @@ exports.getFeedForUser = async (req, res) => {
 
     const uniquePosts = Array.from(allPostsMap.values());
 
-    // מיין מהחדש לישן
     uniquePosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
     res.json({ posts: uniquePosts });

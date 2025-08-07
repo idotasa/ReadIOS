@@ -69,7 +69,6 @@ exports.updateUserDetails = async (req, res) => {
   try {
     const { email, location, profileImage } = req.body;
 
-    // User can update only email, location and profileImage
     const allowedUpdates = {};
     if (email !== undefined) allowedUpdates.email = email;
     if (location !== undefined) allowedUpdates.location = location;

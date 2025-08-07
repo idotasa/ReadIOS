@@ -7,7 +7,6 @@
       <div class="logo fw-bold fs-2 me-auto">ReadIOS</div>
     </div>
 
-    <!-- 🔍 כפתור חיפוש מתקדם -->
     <div class="search-button-wrapper" data-bs-toggle="modal" data-bs-target="#searchModal">
       <div class="search-button-fake">
         <span>חיפוש מתקדם</span>
@@ -24,7 +23,6 @@
     </div>
   </div>
   </header>
-  <!-- 🔍 מודל חיפוש מתקדם -->
     <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
@@ -33,7 +31,6 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="סגור"></button>
           </div>
           <div class="modal-body">
-            <!-- סוג חיפוש -->
             <div class="mb-3">
               <select id="search-type" class="form-select">
                 <option value="user">🔍 חיפוש משתמשים</option>
@@ -41,7 +38,6 @@
               </select>
             </div>
 
-            <!-- שדות חיפוש משתמשים -->
             <div id="user-search-fields" class="d-flex flex-column gap-3">
               <input type="text" id="search-username" class="form-control" placeholder="שם משתמש">
               <input type="text" id="search-location" class="form-control" placeholder="עיר">
@@ -51,7 +47,6 @@
               </div>
             </div>
 
-            <!-- שדות חיפוש קבוצות -->
             <div id="group-search-fields" class="d-flex flex-column gap-3 d-none">
               <input type="text" id="search-groupName" class="form-control" placeholder="שם קבוצה">
               <input type="text" id="search-groupUser" class="form-control" placeholder="משתמש שחבר בקבוצה">
@@ -67,12 +62,10 @@
         </div>
       </div>
     </div>
-            <!-- תוצאות חיפוש מתקדמות -->
     <ul id="topbar-search-results" class="list-group position-absolute mt-1"
         style="top: 60px; left: 50%; transform: translateX(-50%); max-width: 500px; z-index: 1050; display: none; max-height: 300px; overflow-y: auto;">
     </ul>
 
-<!-- MODAL -->
 <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-sm">
     <div class="modal-content">

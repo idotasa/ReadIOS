@@ -1,4 +1,3 @@
-// ------------------------- POPUP OPEN / CLOSE -------------------------
 function openPopup() {
   document.getElementById('registerPopup').classList.remove('d-none');
 }
@@ -6,13 +5,11 @@ function closePopup() {
   document.getElementById('registerPopup').classList.add('d-none');
 }
 
-// ------------------------- TOGGLE PASSWORD ----------------------------
 function togglePassword(id) {
   const inp = document.getElementById(id);
   inp.type = (inp.type === 'password') ? 'text' : 'password';
 }
 
-// --------------------------- REGISTER ---------------------------------
 async function registerUser(body) {
   try {
     const r = await fetch('/api/users/register', {  
@@ -37,7 +34,6 @@ async function registerUser(body) {
   }
 }
 
-// ----------------------------- LOGIN ----------------------------------
 async function loginUser(body) {
   try {
     const res = await fetch('/api/users/login', {
@@ -59,7 +55,6 @@ async function loginUser(body) {
 }
 
 
-// ------------------------- MESSAGES -----------------------------------
 function showSuccess(txt) {
   const box = document.getElementById('successMessage');
   box.textContent = txt;
@@ -67,16 +62,13 @@ function showSuccess(txt) {
   setTimeout(() => box.classList.add('d-none'), 3000);
 }
 function showError(txt) {
-  alert('❌ ' + txt);      // אפשר להחליף במשהו אלגנטי יותר
+  alert('❌ ' + txt);
 }
 
-// ------------------------- EVENT LISTENERS ----------------------------
 document.addEventListener('DOMContentLoaded', () => {
-  // קישור “Register here”
   document.getElementById('openRegister')
           ?.addEventListener('click', e => { e.preventDefault(); openPopup(); });
 
-  // טופס REGISTRATION
   document.querySelector('.register-form')
           ?.addEventListener('submit', e => {
               e.preventDefault();
@@ -90,7 +82,6 @@ document.addEventListener('DOMContentLoaded', () => {
               registerUser(body);
             });
 
-  // טופס LOGIN
   document.querySelector('.login-form')
           ?.addEventListener('submit', e => {
               e.preventDefault();
@@ -102,7 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 });
 
-// סגירת פופ-אפ בלחיצה מחוץ
 window.addEventListener('click', ev => {
   const popup = document.getElementById('registerPopup');
   if (!popup.classList.contains('d-none') && ev.target === popup) closePopup();
@@ -129,7 +119,6 @@ document.addEventListener("DOMContentLoaded", () => {
     img.style.border = "2px solid transparent";
 
     img.addEventListener("click", () => {
-      // הסרת בחירה קודמת
       document.querySelectorAll(".profile-option").forEach(el => {
         el.style.border = "2px solid transparent";
       });

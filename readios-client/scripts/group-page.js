@@ -1,4 +1,4 @@
-let allGroupPosts = []; // מאגר כל הפוסטים בקבוצה
+let allGroupPosts = [];
 
 async function initGroupPage() {
   await loadGroupPostsFromServer();
@@ -37,7 +37,7 @@ async function loadGroupPostsFromServer() {
 
     if (emptyMsg) emptyMsg.style.display = 'none';
 
-    allGroupPosts = posts; // שמירת כל הפוסטים למשתנה גלובלי
+    allGroupPosts = posts;
 
     renderGroupPosts(posts);
 
@@ -71,7 +71,6 @@ function setupSearchGroup() {
 }
 
 function addPostToFeedGroup(post) {
-  // הנחה: פונקציית window.addPostToFeed קיימת בקוד שלך ומציגה פוסט בפיד
   window.addPostToFeed(post);
 }
 

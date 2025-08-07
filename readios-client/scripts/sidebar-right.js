@@ -89,7 +89,6 @@ function initSidebarRight() {
 
   loadFriends();
 
-  // Google Books API
   const bookInput = document.getElementById("bookSearchInput");
   const bookResults = document.getElementById("bookSearchResults");
 
