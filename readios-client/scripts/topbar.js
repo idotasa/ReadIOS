@@ -186,13 +186,13 @@ searchModal.addEventListener("shown.bs.modal", () => {
               const li = document.createElement("li");
               li.className = "list-group-item p-0";
               li.innerHTML = `
-                <a href="/user.html?id=${user._id}" class="d-flex align-items-center gap-2 p-2 text-decoration-none text-dark">
+                <div class="d-flex align-items-center gap-2 p-2">
                   <img src="../images/users/${user.profileImage || 'default'}.png" width="32" height="32" class="rounded-circle">
                   <div>
                     <div class="fw-bold">${user.username}</div>
                     <small>${user.location || 'מיקום לא צוין'}</small>
                   </div>
-                </a>`;
+                </div>`;
               resultsContainer.appendChild(li);
             });
           }
@@ -225,7 +225,7 @@ searchModal.addEventListener("shown.bs.modal", () => {
               const li = document.createElement("li");
               li.className = "list-group-item p-0";
               li.innerHTML = `
-                <a href="/group.html?id=${group._id}" class="d-flex flex-column align-items-start p-2 text-decoration-none text-dark">
+                <a href="../components/group-page.html?id=${group._id}" class="d-flex flex-column align-items-start p-2 text-decoration-none text-dark">
                   <div class="fw-bold">${group.name}</div>
                   <small>${group.description || 'ללא תיאור'}</small>
                 </a>`;
