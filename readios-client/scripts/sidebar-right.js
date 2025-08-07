@@ -205,7 +205,7 @@ async function loadFriends() {
   }
 }
 
-async function initMap() {
+window.initMap = async function () {
   console.log("🔵 initMap מופעל");
 
   const map = new google.maps.Map(document.getElementById("user-map"), {
