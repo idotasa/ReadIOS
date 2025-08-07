@@ -1,5 +1,4 @@
 async function initTopbar() {
-  console.log("✅ initTopbar התחיל לפעול");
   const userId = localStorage.getItem("userId");
   if (!userId || userId.length !== 24) {
   console.warn("⚠️ userId לא תקין:", userId);
