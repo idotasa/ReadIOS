@@ -232,7 +232,7 @@ searchModal.addEventListener("shown.bs.modal", () => {
               const li = document.createElement("li");
               li.className = "list-group-item p-0";
               li.innerHTML = `
-                <a href="groups/id=${group._id}" class="d-flex flex-column align-items-start p-2 text-decoration-none text-dark">
+                <a href="groups/${group._id}" class="d-flex flex-column align-items-start p-2 text-decoration-none text-dark">
                   <div class="fw-bold">${group.name}</div>
                   <small>${group.description || 'ללא תיאור'}</small>
                 </a>`;
