@@ -204,3 +204,45 @@ async function loadFriends() {
     console.error("Failed to load friends", err);
   }
 }
+
+window.initMap = async function () {
+  console.log("🔵 initMap מופעל");
+
+  const map = new google.maps.Map(document.getElementById("user-map"), {
+    center: { lat: 31.771959, lng: 35.217018 }, // מרכז ישראל
+    zoom: 7
+  });
+
+  try {
+    const res = await fetch("http://localhost:5000/api/users");
+    const users = await res.json();
+
+    for (const user of users) {
+      if (user.location) {
+        const coords = await getLatLngFromCity(user.location);
+        if (coords) {
+          new google.maps.Marker({
+            position: coords,
+            map,
+            title: user.username
+          });
+        }
+      }
+    }
+  } catch (err) {
+    console.error("שגיאה בטעינת מיקומי משתמשים:", err);
+  }
+};
+
+
+// פונקציה שממירה שם עיר לקואורדינטות
+async function getLatLngFromCity(cityName) {
+  const apiKey = 'AIzaSyBIlmXXvuUYx3vxsddpHZw22G2CQLeAAlQ'; // אותו מפתח כמו במפה
+  const res = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(cityName)}, Israel&key=${apiKey}`);
+  const data = await res.json();
+  if (data.results && data.results.length > 0) {
+    const location = data.results[0].geometry.location;
+    return { lat: location.lat, lng: location.lng };
+  }
+  return null;
+}
