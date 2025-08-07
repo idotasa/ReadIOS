@@ -41,13 +41,6 @@ async function loadAllComponents() {
     } else {
         console.warn("initCreatePost function not found in create-post.js");
     }
-
-    await loadComponent('group-page-container', 'components/group-page.html');
-    if (typeof initGroupPage === 'function') {
-        initGroupPage();
-    } else {
-        console.warn("initGroupPage function not found in GroupPage.js");
-    }
     
 }
 

@@ -9,18 +9,20 @@ const {
   removeMember,
   deleteGroup,
   getTodaysGroupPostsSummary,
-  shareDailySummaryToFacebook
+  shareDailySummaryToFacebook,
+  getGroupStats
 } = require('../controllers/groupController');
 
+router.get('/stats', getGroupStats);
 router.post('/', createGroup); // Create a new group
-router.get('/:id', getGroupById); // Get group details
 router.post('/:groupId/members/:userId', addGroupMember);
 router.get('/', searchGroups); // Search groups by name
-router.put('/:id', updateGroup); // Update group (owner only)
 router.delete('/:id/members/:memberId', removeMember); // Remove member (owner only)
-router.delete('/:id', deleteGroup);
+
 router.get('/today/:groupId', getTodaysGroupPostsSummary);
 router.post('/:groupId/share-to-facebook', shareDailySummaryToFacebook);
-
+router.put('/:id', updateGroup); // Update group (owner only)
+router.get('/:id', getGroupById); // Get group details
+router.delete('/:id', deleteGroup);
 module.exports = router;
 
