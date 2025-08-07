@@ -10,10 +10,12 @@ const {
   deleteGroup,
   searchGroupsWithPostsToday,
   getTodaysGroupPostsSummary,
-  shareDailySummaryToFacebook
+  shareDailySummaryToFacebook,
+  getPostCountsByGroupToday
 } = require('../controllers/groupController');
 
 router.get('/searchWithPostsToday', searchGroupsWithPostsToday);
+router.get('/stats/postsByGroupToday', getPostCountsByGroupToday);
 router.get('/today/:groupId', getTodaysGroupPostsSummary);
 router.post('/:groupId/share-to-facebook', shareDailySummaryToFacebook);
 router.post('/', createGroup); // Create a new group
